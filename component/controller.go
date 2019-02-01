@@ -25,11 +25,11 @@ func (ctrl *ComponentController) Create(c *gin.Context) {
 
 	ref, err := ctrl.service.CreateComponent(newComponent)
 	if err != nil {
-		switch err.Error() {
-		case errors.ErrComponentNameAlreadyExists:
+		switch err.(type) {
+		case *errors.ErrComponentNameAlreadyExists:
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
-		case errors.ErrComponentRefAlreadyExists:
+		case *errors.ErrComponentRefAlreadyExists:
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		default:

@@ -18,21 +18,21 @@ func NewPrometheusService(incident incident.Service, component component.Service
 
 func (svc *prometheusService) ProcessIncomingWebhook(incoming models.PrometheusIncomingWebhook) error {
 	for _, alerts := range incoming.Alerts {
-		if ref, err := svc.component.CreateComponent(alerts.Component); err != nil {
-			if svc.shouldFail(err) {
-				return err
-			}
-				alerts.Incident.ComponentRef = ref
-			}
-			if err := svc.incident.CreateIncidents(alerts.Incident); err != nil {
-				return err
-			}
+		ref, err := svc.component.CreateComponent(alerts.Component)
+		if svc.shouldFail(err) {
+			return err
 		}
+		alerts.Incident.ComponentRef = ref
+
+		if err := svc.incident.CreateIncidents(alerts.Incident); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func (svc *prometheusService) shouldFail(err error) bool {
-	switch err.Error() {
+	switch err.(type) {
 	case errors.ErrComponentNameIsEmpty:
 		return true
 	case errors.ErrComponentNameAlreadyExists:
@@ -40,6 +40,6 @@ func (svc *prometheusService) shouldFail(err error) bool {
 	case errors.ErrComponentRefAlreadyExists:
 		return false
 	default:
-		return false
+		return true
 	}
 }

@@ -74,21 +74,21 @@ func (s *componentService) ComponentExists(componentFields map[string]interface{
 
 func (s *componentService) isValidComponent(c models.Component) (bool, error) {
 	if c.Name == "" {
-		return false, errors.E(errors.ErrComponentNameIsEmpty)
+		return false, &errors.ErrComponentNameIsEmpty{Message: errors.ErrComponentNameIsEmptyMessage}
 	}
 	return true, nil
 }
 
 func (s *componentService) isComponentNameInUse(c models.Component) (bool, error) {
 	if comp, exist := s.ComponentExists(map[string]interface{}{"name": c.Name}); exist && comp.Ref != c.Ref {
-		return true, errors.E(errors.ErrComponentNameAlreadyExists)
+		return true, &errors.ErrComponentNameAlreadyExists{Message: errors.ErrComponentRefAlreadyExistsMessage}
 	}
 	return false, nil
 }
 
 func (s *componentService) isComponentRefInUse(c models.Component) (bool, error) {
 	if _, exist := s.ComponentExists(map[string]interface{}{"ref": c.Ref}); exist {
-		return true, errors.E(errors.ErrComponentRefAlreadyExists)
+		return true, &errors.ErrComponentRefAlreadyExists{Message: errors.ErrComponentRefAlreadyExistsMessage}
 	}
 	return false, nil
 }
