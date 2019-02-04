@@ -25,7 +25,9 @@ func (svc *prometheusService) ProcessIncomingWebhook(incoming models.PrometheusI
 		alerts.Incident.ComponentRef = ref
 
 		if err := svc.incident.CreateIncidents(alerts.Incident); err != nil {
-			return err
+			if svc.shouldFail(err) {
+				return err
+			}
 		}
 	}
 	return nil
@@ -33,11 +35,13 @@ func (svc *prometheusService) ProcessIncomingWebhook(incoming models.PrometheusI
 
 func (svc *prometheusService) shouldFail(err error) bool {
 	switch err.(type) {
-	case errors.ErrComponentNameIsEmpty:
+	case *errors.ErrComponentNameIsEmpty:
 		return true
-	case errors.ErrComponentNameAlreadyExists:
+	case *errors.ErrComponentNameAlreadyExists:
 		return false
-	case errors.ErrComponentRefAlreadyExists:
+	case *errors.ErrComponentRefAlreadyExists:
+		return false
+	case *errors.ErrIncidentStatusIgnored:
 		return false
 	default:
 		return true

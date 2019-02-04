@@ -83,6 +83,26 @@ func TestIncidentMongoDB_Repository_Find(t *testing.T) {
 
 }
 
+func TestIncidentMongoDB_Repository_FindOne(t *testing.T) {
+	repo := incident.NewMongoRepository(testSession)
+
+	inc, err := repo.FindOne(map[string]interface{}{"component_ref": c.Ref})
+	if assert.Nil(t, err) && assert.NotNil(t, inc) {
+		assert.Equal(t, i, inc)
+	}
+
+	inc, err = repo.FindOne(map[string]interface{}{"component_ref": "Invalid Ref"})
+	assert.NotNil(t, err)
+
+	inc, err = repo.FindOne(map[string]interface{}{"invalidQuery": "SomeValue"})
+	assert.NotNil(t, err)
+
+	repo = incident.NewMongoRepository(failureSession)
+	_, err = repo.FindOne(map[string]interface{}{"component_ref": c.Ref})
+	assert.NotNil(t, err)
+
+}
+
 func TestIncidentMongoDB_Repository_List(t *testing.T) {
 	repo := incident.NewMongoRepository(testSession)
 
@@ -104,4 +124,29 @@ func TestIncidentMongoDB_Repository_List(t *testing.T) {
 	repo = incident.NewMongoRepository(failureSession)
 	_, err = repo.List(startDt, endDt)
 	assert.NotNil(t, err)
+}
+
+func TestIncidentMongoDB_Repository_Update(t *testing.T) {
+
+	repo := incident.NewMongoRepository(testSession)
+
+	i.Status = models.IncidentStatusOK
+	i.Resolved = true
+	err := repo.Update(i)
+	assert.Nil(t, err)
+
+	incidents, err := repo.FindOne(map[string]interface{}{"component_ref": i.ComponentRef})
+	if assert.Nil(t, err) && assert.NotNil(t, incidents) {
+		assert.Equal(t, i, incidents)
+	}
+	i2 := i
+	i2.ComponentRef = "Invalid Component Ref"
+	err = repo.Update(i2)
+	assert.NotNil(t, err)
+
+	repo = incident.NewMongoRepository(failureSession)
+
+	err = repo.Insert(i)
+	assert.NotNil(t, err)
+
 }

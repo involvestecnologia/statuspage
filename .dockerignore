@@ -21,3 +21,7 @@ statuspage
 # Docs
 *.md
 LICENSE
+
+#Docker
+Dockerfile
+docker-compose.yml

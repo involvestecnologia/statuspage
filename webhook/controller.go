@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	mgo "github.com/globalsign/mgo"
 	"github.com/involvestecnologia/statuspage/errors"
 	"github.com/involvestecnologia/statuspage/models"
 )
@@ -40,16 +39,17 @@ func (ctrl *WebhookController) Find(c *gin.Context) {
 	id := c.Param("id")
 	webhook, err := ctrl.service.FindWebhook(id)
 	if err != nil {
-		if err == mgo.ErrNotFound {
-			c.JSON(http.StatusNotFound, "")
+		switch err.(type) {
+		case *errors.ErrNotFound:
+			c.AbortWithError(http.StatusNotFound, err)
+			return
+		case *errors.ErrAlreadyExists:
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		if err.Error() == errors.ErrAlreadyExists {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-		c.JSON(http.StatusInternalServerError, "")
-		return
 	}
 	c.JSON(http.StatusOK, webhook)
 
@@ -79,16 +79,17 @@ func (ctrl *WebhookController) Update(c *gin.Context) {
 	}
 	err := ctrl.service.Update(id, newWebhook)
 	if err != nil {
-		if err == mgo.ErrNotFound {
-			c.JSON(http.StatusNotFound, "")
+		switch err.(type) {
+		case *errors.ErrNotFound:
+			c.AbortWithError(http.StatusNotFound, err)
+			return
+		case *errors.ErrAlreadyExists:
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		if err.Error() == errors.ErrAlreadyExists {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-		c.JSON(http.StatusInternalServerError, "")
-		return
 	}
 	c.JSON(http.StatusOK, "")
 
@@ -99,16 +100,17 @@ func (ctrl *WebhookController) Delete(c *gin.Context) {
 
 	err := ctrl.service.Delete(id)
 	if err != nil {
-		if err == mgo.ErrNotFound {
-			c.JSON(http.StatusNotFound, "")
+		switch err.(type) {
+		case *errors.ErrNotFound:
+			c.AbortWithError(http.StatusNotFound, err)
+			return
+		case *errors.ErrAlreadyExists:
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		if err.Error() == errors.ErrAlreadyExists {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-		c.JSON(http.StatusInternalServerError, "")
-		return
 	}
 	c.JSON(http.StatusOK, "")
 
@@ -120,12 +122,14 @@ func (ctrl *WebhookController) List(c *gin.Context) {
 
 	webhooks, err := ctrl.service.List(webhookType)
 	if err != nil {
-		if err == mgo.ErrNotFound {
-			c.JSON(http.StatusNotFound, "")
+		switch err.(type) {
+		case *errors.ErrNotFound:
+			c.AbortWithError(http.StatusNotFound, err)
+			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, "")
-		return
 	}
 	c.JSON(http.StatusOK, webhooks)
 

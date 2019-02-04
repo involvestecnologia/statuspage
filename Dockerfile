@@ -8,7 +8,7 @@ RUN apk add git --no-cache
 
 COPY . .
 
-RUN go mod vendor
+RUN go mod tidy && go mod vendor
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o statuspage
 

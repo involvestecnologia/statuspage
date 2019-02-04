@@ -1,9 +1,10 @@
 package prometheus
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/involvestecnologia/statuspage/models"
-	"net/http"
 )
 
 type prometheusController struct {

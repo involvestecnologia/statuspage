@@ -6,11 +6,7 @@ services:
     ports:
       - 27017:27017
     container_name: statuspage_mongo
-    env:
-      VIRTUAL_HOST: statuspage.agilepromoter.com
-      VIRTUAL_PORT: 8080
-      CERT_NAME: default
-
+    
   statuspage:
     build: ./
     restart: unless-stopped

@@ -24,14 +24,14 @@ func (ctrl *ClientController) Create(c *gin.Context) {
 	}
 	ref, err := ctrl.service.CreateClient(newClient)
 	if err != nil {
-		switch err.Error() {
-		case errors.ErrClientNameAlreadyExists:
+		switch err.(type) {
+		case *errors.ErrClientNameAlreadyExists:
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
-		case errors.ErrClientRefAlreadyExists:
+		case *errors.ErrClientRefAlreadyExists:
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
-		case errors.ErrInvalidRef:
+		case *errors.ErrInvalidRef:
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		default:
@@ -51,16 +51,17 @@ func (ctrl *ClientController) Update(c *gin.Context) {
 	clientRef := c.Param("clientRef")
 	err := ctrl.service.UpdateClient(clientRef, client)
 	if err != nil {
-		if err.Error() == errors.ErrNotFound {
+		switch err.(type) {
+		case *errors.ErrNotFound:
 			c.AbortWithError(http.StatusNotFound, err)
 			return
-		}
-		if err.Error() == errors.ErrInvalidRef {
+		case *errors.ErrInvalidRef:
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
 	}
 	c.JSON(http.StatusOK, "")
 }
@@ -70,12 +71,14 @@ func (ctrl *ClientController) Find(c *gin.Context) {
 	qValue := c.Param("clientRef")
 	client, err := ctrl.service.FindClient(map[string]interface{}{queryBy: qValue})
 	if err != nil {
-		if err.Error() == errors.ErrNotFound {
+		switch err.(type) {
+		case *errors.ErrNotFound:
 			c.AbortWithError(http.StatusNotFound, err)
 			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
 	}
 	c.JSON(http.StatusOK, client)
 }
@@ -84,12 +87,14 @@ func (ctrl *ClientController) Delete(c *gin.Context) {
 	clientID := c.Param("clientRef")
 	err := ctrl.service.RemoveClient(clientID)
 	if err != nil {
-		if err.Error() == errors.ErrNotFound {
+		switch err.(type) {
+		case *errors.ErrNotFound:
 			c.AbortWithError(http.StatusNotFound, err)
 			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
 	}
 	c.JSON(http.StatusNoContent, "")
 }

@@ -29,9 +29,27 @@ func (r *mongoRepository) Find(queryParam map[string]interface{}) (incidents []m
 	defer mongoFailure(&err)
 	err = r.db.DB(databaseName).C("Incidents").Find(queryParam).All(&incidents)
 	if incidents == nil {
-		return incidents, errors.E(errors.ErrNotFound)
+		return incidents, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return incidents, err
+}
+
+func (r *mongoRepository) FindOne(queryParam map[string]interface{}) (incident models.Incident, err error) {
+	defer mongoFailure(&err)
+	err = r.db.DB(databaseName).C("Incidents").Find(queryParam).One(&incident)
+	if err != nil {
+		return incident, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
+	}
+	return incident, err
+}
+
+func (r *mongoRepository) Update(incident models.Incident) (err error) {
+	defer mongoFailure(&err)
+	err = r.db.DB(databaseName).C("Incidents").Update(bson.M{"component_ref": incident.ComponentRef}, incident)
+	if err != nil {
+		return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
+	}
+	return err
 }
 
 func (r *mongoRepository) List(startDt time.Time, endDt time.Time) (incidents []models.Incident, err error) {
@@ -49,6 +67,6 @@ func (r *mongoRepository) List(startDt time.Time, endDt time.Time) (incidents []
 
 func mongoFailure(e *error) {
 	if r := recover(); r != nil {
-		*e = errors.E(errors.ErrMongoFailuere)
+		*e = &errors.ErrMongoFailuere{Message: errors.ErrMongoFailuereMessage}
 	}
 }

@@ -43,7 +43,7 @@ func (m *MockClientDAO) Delete(clientRef string) error {
 			return nil
 		}
 	}
-	return errors.E(errors.ErrNotFound)
+	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
 func (m *MockClientDAO) Find(q map[string]interface{}) (models.Client, error) {
@@ -61,11 +61,11 @@ func (m *MockClientDAO) Find(q map[string]interface{}) (models.Client, error) {
 				}
 			}
 		} else {
-			return models.Client{}, errors.E("No queryable parameters passed")
+			return models.Client{}, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 		}
 	}
 
-	return models.Client{}, errors.E(errors.ErrNotFound)
+	return models.Client{}, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
 func (m *MockClientDAO) Insert(client models.Client) (string, error) {
@@ -88,7 +88,7 @@ func (m *MockClientDAO) Update(clientRef string, client models.Client) error {
 			return nil
 		}
 	}
-	return errors.E(errors.ErrNotFound)
+	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
 type MockFailureClientDAO struct {

@@ -64,11 +64,11 @@ func (m *MockComponentDAO) Find(q map[string]interface{}) (models.Component, err
 				}
 			}
 		} else {
-			return c, errors.E(errors.ErrInvalidQuery)
+			return c, &errors.ErrInvalidQuery{Message: errors.ErrInvalidQueryMessage}
 		}
 	}
 
-	return c, errors.E(errors.ErrNotFound)
+	return c, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 func (m *MockComponentDAO) Insert(component models.Component) (string, error) {
 	if component.Ref == "" {
@@ -85,7 +85,7 @@ func (m *MockComponentDAO) Update(ref string, component models.Component) error 
 			return nil
 		}
 	}
-	return errors.E(errors.ErrNotFound)
+	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 func (m *MockComponentDAO) Delete(ref string) error {
 	for k, comp := range m.components {
@@ -94,7 +94,7 @@ func (m *MockComponentDAO) Delete(ref string) error {
 			return nil
 		}
 	}
-	return errors.E(errors.ErrNotFound)
+	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
 type MockFailureComponentDAO struct {

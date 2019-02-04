@@ -41,8 +41,28 @@ func (m *MockIncidentDAO) Find(query map[string]interface{}) ([]models.Incident,
 	if len(incidents) > 0 {
 		return incidents, nil
 	}
-	return incidents, errors.E(errors.ErrNotFound)
+	return incidents, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
+
+func (m *MockIncidentDAO) FindOne(query map[string]interface{}) (models.Incident, error) {
+	for _, i := range m.incidents {
+		if i.ComponentRef == query["component_ref"] {
+			return i, nil
+		}
+	}
+	return models.Incident{}, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
+}
+
+func (m *MockIncidentDAO) Update(incident models.Incident) error {
+	for k, i := range m.incidents {
+		if i.ComponentRef == incident.ComponentRef {
+			m.incidents[k] = incident
+			return nil
+		}
+	}
+	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
+}
+
 func (m *MockIncidentDAO) List(start time.Time, end time.Time) ([]models.Incident, error) {
 	var inc []models.Incident
 	for _, i := range m.incidents {
@@ -67,6 +87,15 @@ func NewMockFailureIncidentDAO() incident.Repository {
 func (m *MockFailureIncidentDAO) Find(query map[string]interface{}) ([]models.Incident, error) {
 	return []models.Incident{}, fmt.Errorf("Failure DAO")
 }
+
+func (m *MockFailureIncidentDAO) FindOne(query map[string]interface{}) (models.Incident, error) {
+	return models.Incident{}, fmt.Errorf("Failure DAO")
+}
+
+func (m *MockFailureIncidentDAO) Update(i models.Incident) error {
+	return fmt.Errorf("Failure DAO")
+}
+
 func (m *MockFailureIncidentDAO) List(start time.Time, end time.Time) ([]models.Incident, error) {
 	return []models.Incident{}, fmt.Errorf("Failure DAO")
 }

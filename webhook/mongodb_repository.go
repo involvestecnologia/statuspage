@@ -24,7 +24,7 @@ func (r *MongoRepository) GetCurrentSession() *mgo.Session {
 func (r *MongoRepository) FindWebhook(id string) (models.Webhook, error) {
 	var wh models.Webhook
 	if !bson.IsObjectIdHex(id) {
-		return wh, errors.E(errors.ErrAlreadyExists)
+		return wh, &errors.ErrAlreadyExists{Message: errors.ErrAlreadyExistsMessage}
 	}
 	webhookQ := bson.M{"_id": bson.ObjectIdHex(id)}
 	err := r.db.DB("status").C("Webhooks").Find(webhookQ).One(&wh)
@@ -60,7 +60,7 @@ func (r *MongoRepository) CreateWebhook(webhook models.Webhook) error {
 
 func (r *MongoRepository) UpdateWebhook(id string, webhook models.Webhook) error {
 	if !bson.IsObjectIdHex(id) {
-		return errors.E(errors.ErrAlreadyExists)
+		return &errors.ErrAlreadyExists{Message: errors.ErrAlreadyExistsMessage}
 	}
 	webhookQ := bson.M{"_id": bson.ObjectIdHex(id)}
 	return r.db.DB("status").C("Webhooks").Update(webhookQ, webhook)
@@ -68,7 +68,7 @@ func (r *MongoRepository) UpdateWebhook(id string, webhook models.Webhook) error
 
 func (r *MongoRepository) DeleteWebhook(id string) error {
 	if !bson.IsObjectIdHex(id) {
-		return errors.E(errors.ErrAlreadyExists)
+		return &errors.ErrAlreadyExists{Message: errors.ErrAlreadyExistsMessage}
 	}
 	webhookQ := bson.M{"_id": bson.ObjectIdHex(id)}
 	return r.db.DB("status").C("Webhooks").Remove(webhookQ)

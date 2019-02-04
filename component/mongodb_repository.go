@@ -37,7 +37,7 @@ func (r *mongoRepository) Find(q map[string]interface{}) (c models.Component, er
 	defer mongoFailure(&err)
 	err = r.db.DB(databaseName).C("Component").Find(q).One(&c)
 	if err == mgo.ErrNotFound {
-		return c, errors.E(errors.ErrNotFound)
+		return c, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return c, err
 }
@@ -51,7 +51,7 @@ func (r *mongoRepository) Update(ref string, comp models.Component) (err error) 
 	}}
 	err = r.db.DB(databaseName).C("Component").Update(compQ, change)
 	if err == mgo.ErrNotFound {
-		return errors.E(errors.ErrNotFound)
+		return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return err
 }
@@ -61,13 +61,13 @@ func (r *mongoRepository) Delete(ref string) (err error) {
 	compQ := bson.M{"ref": ref}
 	err = r.db.DB(databaseName).C("Component").Remove(compQ)
 	if err == mgo.ErrNotFound {
-		return errors.E(errors.ErrNotFound)
+		return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return err
 }
 
 func mongoFailure(e *error) {
 	if r := recover(); r != nil {
-		*e = errors.E(errors.ErrMongoFailuere)
+		*e = &errors.ErrMongoFailuere{Message: errors.ErrMongoFailuereMessage}
 	}
 }

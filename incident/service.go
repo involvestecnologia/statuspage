@@ -25,11 +25,39 @@ func (s *incidentService) CreateIncidents(incident models.Incident) error {
 	if err != nil {
 		return err
 	}
-	return s.repo.Insert(incident)
+
+	lastIncident, err := s.GetLastIncident(incident.ComponentRef)
+	if err != nil {
+		return s.repo.Insert(incident)
+	}
+
+	if (incident.Status == models.IncidentStatusOK) && (lastIncident.Status != models.IncidentStatusOK) {
+		lastIncident.Status = incident.Status
+		lastIncident.Duration = incident.Duration
+		lastIncident.Resolved = true
+		return s.UpdateIncident(lastIncident)
+	}
+
+	if incident.Status > lastIncident.Status {
+		lastIncident.Status = incident.Status
+		lastIncident.Description = incident.Description
+		lastIncident.Resolved = false
+		return s.UpdateIncident(lastIncident)
+	}
+
+	return &errors.ErrIncidentStatusIgnored{errors.ErrIncidentStatusIgnoredMessage}
+}
+
+func (s *incidentService) UpdateIncident(incident models.Incident) error {
+	return s.repo.Update(incident)
 }
 
 func (s *incidentService) FindIncidents(query map[string]interface{}) ([]models.Incident, error) {
 	return s.repo.Find(query)
+}
+
+func (s *incidentService) GetLastIncident(componentRef string) (models.Incident, error) {
+	return s.repo.FindOne(map[string]interface{}{"component_ref": componentRef})
 }
 
 func (s *incidentService) ListIncidents(year string, month string) ([]models.Incident, error) {
@@ -72,7 +100,7 @@ func (s *incidentService) ValidateMonth(month string) (int, error) {
 	}
 	valid := m > 0 && m < 13
 	if !valid {
-		return -1, errors.E(errors.ErrInvalidMonth)
+		return -1, &errors.ErrInvalidMonth{Message: errors.ErrInvalidMonthMessage}
 	}
 	return m, nil
 }
@@ -84,7 +112,7 @@ func (s *incidentService) ValidateYear(year string) (int, error) {
 	}
 	valid := y > 0 && y <= time.Now().Year()
 	if !valid {
-		return -1, errors.E(errors.ErrInvalidYear)
+		return -1, &errors.ErrInvalidYear{Message: errors.ErrInvalidYearMessage}
 	}
 	return y, nil
 }

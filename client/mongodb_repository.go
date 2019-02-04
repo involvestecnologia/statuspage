@@ -36,7 +36,7 @@ func (r *mongoRepository) Update(clientID string, client models.Client) (err err
 	}}
 	err = r.db.DB(databaseName).C("Client").Update(clientQ, change)
 	if err == mgo.ErrNotFound {
-		return errors.E(errors.ErrNotFound)
+		return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return err
 }
@@ -45,7 +45,7 @@ func (r *mongoRepository) Find(q map[string]interface{}) (client models.Client, 
 	defer mongoFailure(&err)
 	err = r.db.DB(databaseName).C("Client").Find(q).One(&client)
 	if err == mgo.ErrNotFound {
-		return client, errors.E(errors.ErrNotFound)
+		return client, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return client, err
 }
@@ -55,7 +55,7 @@ func (r *mongoRepository) Delete(clientID string) (err error) {
 	clientQ := bson.M{"ref": clientID}
 	err = r.db.DB(databaseName).C("Client").Remove(clientQ)
 	if err == mgo.ErrNotFound {
-		return errors.E(errors.ErrNotFound)
+		return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return err
 }
@@ -68,6 +68,6 @@ func (r *mongoRepository) List() (clients []models.Client, err error) {
 
 func mongoFailure(e *error) {
 	if r := recover(); r != nil {
-		*e = errors.E(errors.ErrMongoFailuere)
+		*e = &errors.ErrMongoFailuere{Message: errors.ErrMongoFailuereMessage}
 	}
 }

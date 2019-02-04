@@ -92,6 +92,14 @@ func TestIncidentService_CreateIncident(t *testing.T) {
 		assert.Equal(t, i, inc[len(inc)-1])
 	}
 
+	i.Status = models.IncidentStatusUnstable
+	err = s.CreateIncidents(i)
+	assert.NotNil(t, err)
+
+	i.Status = models.IncidentStatusOK
+	err = s.CreateIncidents(i)
+	assert.Nil(t, err)
+
 	i.ComponentRef = "Invalid Component Ref"
 	err = s.CreateIncidents(i)
 	assert.NotNil(t, err)

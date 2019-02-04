@@ -30,7 +30,7 @@ var availableTriggers = map[string]trigger{
 func (s *WebhookService) TriggerWebhook(element interface{}, action string) error {
 	trigger := availableTriggers[action]
 	if trigger == nil {
-		return errors.E(errors.ErrTriggerUnavailable)
+		return &errors.ErrTriggerUnavailable{Message: errors.ErrTriggerUnavailableMessage}
 	}
 	err := trigger()
 	if err != nil {
