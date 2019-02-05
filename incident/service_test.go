@@ -20,14 +20,13 @@ func TestNewIncidentService(t *testing.T) {
 	s := incident.NewService(incidentDAO, componentService)
 	assert.Implements(t, (*incident.Service)(nil), s)
 }
-
 func TestIncidentService_ListIncidents(t *testing.T) {
 	s := incident.NewService(
 		mock.NewMockIncidentDAO(),
 		component.NewService(mock.NewMockComponentDAO()),
 	)
 
-	i, err := s.ListIncidents("", "")
+	i, err := s.ListIncidents("", "", false)
 	if assert.Nil(t, err) && assert.NotNil(t, i) {
 		if assert.IsType(t, []models.Incident{}, i) {
 			assert.Equal(t, mock.ZeroTimeHex, i[0].ComponentRef)
@@ -35,39 +34,48 @@ func TestIncidentService_ListIncidents(t *testing.T) {
 		}
 	}
 
+	incs, err := s.ListIncidents("", "", true)
+	if assert.Nil(t, err) && assert.NotNil(t, i) {
+		if assert.IsType(t, []models.Incident{}, i) {
+			for _, inc := range incs {
+				assert.False(t, inc.Resolved)
+			}
+		}
+	}
+
 	// Valid Month
-	monthOnly, err := s.ListIncidents("", "1")
+	monthOnly, err := s.ListIncidents("", "1", false)
 	if assert.Nil(t, err) && assert.NotNil(t, monthOnly) {
 		assert.Equal(t, 1, int(monthOnly[0].Date.Month()))
 	}
 	// Valid Year
-	yearOnly, err := s.ListIncidents("1", "")
+	yearOnly, err := s.ListIncidents("1", "", false)
 	if assert.Nil(t, err) && assert.NotNil(t, yearOnly) {
 		assert.Equal(t, 1, yearOnly[0].Date.Year())
 	}
 
 	// Invalid Year
-	_, err = s.ListIncidents("0", "1")
+	_, err = s.ListIncidents("0", "1", false)
 	assert.NotNil(t, err)
 
 	// Invalid Month
-	_, err = s.ListIncidents("1", "0")
+	_, err = s.ListIncidents("1", "0", false)
 	assert.NotNil(t, err)
 
 	// Invalid Month
-	_, err = s.ListIncidents("", "13")
+	_, err = s.ListIncidents("", "13", false)
 	assert.NotNil(t, err)
 
 	// Invalid Month
-	_, err = s.ListIncidents("", "test")
+	_, err = s.ListIncidents("", "test", false)
 	assert.NotNil(t, err)
 
 	// Invalid Year
-	_, err = s.ListIncidents("test", "")
+	_, err = s.ListIncidents("test", "", false)
 	assert.NotNil(t, err)
 
 	// Invalid Year
-	_, err = s.ListIncidents("-1", "")
+	_, err = s.ListIncidents("-1", "", false)
 	assert.NotNil(t, err)
 
 }
@@ -81,7 +89,7 @@ func TestIncidentService_CreateIncident(t *testing.T) {
 		ComponentRef: mock.ZeroTimeHex,
 		Status:       models.IncidentStatusOutage,
 		Description:  "",
-		Date:         time.Time{},
+		Date:         time.Now(),
 	}
 
 	err := s.CreateIncidents(i)
@@ -89,14 +97,26 @@ func TestIncidentService_CreateIncident(t *testing.T) {
 
 	inc, err := s.FindIncidents(map[string]interface{}{"component_ref": mock.ZeroTimeHex})
 	if assert.Nil(t, err) && assert.NotNil(t, i) {
-		assert.Equal(t, i, inc[len(inc)-1])
+		assert.Equal(t, i, inc[0])
 	}
 
 	i.Status = models.IncidentStatusUnstable
 	err = s.CreateIncidents(i)
 	assert.NotNil(t, err)
 
+	i.ComponentRef = "Empty Component"
+	err = s.CreateIncidents(i)
+	assert.Nil(t, err)
+
 	i.Status = models.IncidentStatusOK
+	err = s.CreateIncidents(i)
+	assert.Nil(t, err)
+
+	i.Status = models.IncidentStatusUnstable
+	err = s.CreateIncidents(i)
+	assert.Nil(t, err)
+
+	i.Status = models.IncidentStatusOutage
 	err = s.CreateIncidents(i)
 	assert.Nil(t, err)
 

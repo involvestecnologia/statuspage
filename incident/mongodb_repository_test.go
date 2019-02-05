@@ -108,21 +108,29 @@ func TestIncidentMongoDB_Repository_List(t *testing.T) {
 
 	startDt := time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC)
 	endDt := time.Date(2019, time.January, 1, 0, 0, 0, 0, time.UTC)
+	unresolved := false
 
-	incidents, err := repo.List(startDt, endDt)
+	incidents, err := repo.List(startDt, endDt, unresolved)
 	if assert.Nil(t, err) && assert.NotNil(t, incidents) {
 		assert.Equal(t, []models.Incident{i}, incidents)
 	}
 
+	incidents, err = repo.List(startDt, endDt, true)
+	if assert.Nil(t, err) && assert.NotNil(t, incidents) {
+		for _, i := range incidents {
+			assert.False(t, i.Resolved)
+		}
+	}
+
 	endDt = time.Date(2018, time.January, 2, 0, 0, 0, 0, time.UTC)
-	incidents, err = repo.List(startDt, endDt)
+	incidents, err = repo.List(startDt, endDt, unresolved)
 	if assert.Nil(t, err) && assert.Nil(t, incidents) {
 		assert.IsType(t, []models.Incident{}, incidents)
 	}
 
 	endDt = time.Date(2019, time.January, 1, 0, 0, 0, 0, time.UTC)
 	repo = incident.NewMongoRepository(failureSession)
-	_, err = repo.List(startDt, endDt)
+	_, err = repo.List(startDt, endDt, unresolved)
 	assert.NotNil(t, err)
 }
 

@@ -43,6 +43,8 @@ func (svc *prometheusService) shouldFail(err error) bool {
 		return false
 	case *errors.ErrIncidentStatusIgnored:
 		return false
+	case nil:
+		return false
 	default:
 		return true
 	}

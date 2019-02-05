@@ -27,7 +27,7 @@ func (r *mongoRepository) Insert(incident models.Incident) (err error) {
 
 func (r *mongoRepository) Find(queryParam map[string]interface{}) (incidents []models.Incident, err error) {
 	defer mongoFailure(&err)
-	err = r.db.DB(databaseName).C("Incidents").Find(queryParam).All(&incidents)
+	err = r.db.DB(databaseName).C("Incidents").Find(queryParam).Sort("-date").All(&incidents)
 	if incidents == nil {
 		return incidents, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
@@ -36,7 +36,7 @@ func (r *mongoRepository) Find(queryParam map[string]interface{}) (incidents []m
 
 func (r *mongoRepository) FindOne(queryParam map[string]interface{}) (incident models.Incident, err error) {
 	defer mongoFailure(&err)
-	err = r.db.DB(databaseName).C("Incidents").Find(queryParam).One(&incident)
+	err = r.db.DB(databaseName).C("Incidents").Find(queryParam).Sort("-date").Limit(1).One(&incident)
 	if err != nil {
 		return incident, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
@@ -45,23 +45,32 @@ func (r *mongoRepository) FindOne(queryParam map[string]interface{}) (incident m
 
 func (r *mongoRepository) Update(incident models.Incident) (err error) {
 	defer mongoFailure(&err)
-	err = r.db.DB(databaseName).C("Incidents").Update(bson.M{"component_ref": incident.ComponentRef}, incident)
+	var i models.Incident
+	change := mgo.Change{
+		Update:    bson.M{"$set": incident},
+		ReturnNew: false,
+	}
+	_, err = r.db.DB(databaseName).C("Incidents").Find(bson.M{"component_ref": incident.ComponentRef}).Sort("-date").Apply(change, &i)
 	if err != nil {
 		return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return err
 }
 
-func (r *mongoRepository) List(startDt time.Time, endDt time.Time) (incidents []models.Incident, err error) {
+func (r *mongoRepository) List(startDt time.Time, endDt time.Time, unresolved bool) (incidents []models.Incident, err error) {
 	defer mongoFailure(&err)
 	findQ := bson.M{
 		"date": bson.M{
-			"$gt": startDt.Add(-(24 * time.Hour)),
+			"$gt": startDt.Add(-24 * time.Hour),
 			"$lt": endDt.Add(24 * time.Hour),
 		},
 	}
 
-	err = r.db.DB(databaseName).C("Incidents").Find(findQ).All(&incidents)
+	if unresolved {
+		findQ = bson.M{"$and": []bson.M{findQ, bson.M{"resolved": false}}}
+	}
+
+	err = r.db.DB(databaseName).C("Incidents").Find(findQ).Sort("-date").All(&incidents)
 	return incidents, err
 }
 

@@ -86,12 +86,14 @@ func (ctrl *ComponentController) List(c *gin.Context) {
 	c.ShouldBindJSON(&comps)
 	components, err := ctrl.service.ListComponents(comps.Refs)
 	if err != nil {
-		if err.Error() == errors.ErrNotFound {
+		switch err.(type) {
+		case *errors.ErrNotFound:
 			c.AbortWithError(http.StatusNotFound, err)
 			return
+		default:
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
 		}
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
 	}
 	c.JSON(http.StatusOK, components)
 }

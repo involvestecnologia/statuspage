@@ -44,7 +44,7 @@ func performRequest(t *testing.T, r http.Handler, method, path string, body []by
 
 func TestController_Create(t *testing.T) {
 	//Valid: new incident body
-	body := []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","status": 1,"description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
+	body := []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","status": 3,"description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
 	resp := performRequest(t, router, "POST", routerGroupName+"/incident", body)
 
 	assert.Equal(t, http.StatusCreated, resp.Code)
@@ -54,6 +54,12 @@ func TestController_Create(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 
+	//Invalid: incident status is declined
+	body = []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","status": 2,"description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
+	resp = performRequest(t, router, "POST", routerGroupName+"/incident", body)
+
+	assert.Equal(t, http.StatusPreconditionFailed, resp.Code)
+
 	//Invalid: incident body missing required parameter status
 	body = []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
 	resp = performRequest(t, router, "POST", routerGroupName+"/incident", body)
@@ -61,25 +67,25 @@ func TestController_Create(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, resp.Code)
 
 	//Invalid: incident missing required parameter occurrence_date
-	body = []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","status":0, "description": "test"}`)
+	body = []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","status":1, "description": "test"}`)
 	resp = performRequest(t, router, "POST", routerGroupName+"/incident", body)
 
 	assert.Equal(t, http.StatusBadRequest, resp.Code)
 
 	//Invalid: incident missing required parameter component_ref
-	body = []byte(`{"status":0, "description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
+	body = []byte(`{"status":1, "description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
 	resp = performRequest(t, router, "POST", routerGroupName+"/incident", body)
 
 	assert.Equal(t, http.StatusBadRequest, resp.Code)
 
 	//Invalid: unknow component
-	body = []byte(`{"component_ref":"Invalid Component Ref","status": 1,"description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
+	body = []byte(`{"component_ref":"Invalid Component Ref","status": 2,"description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
 	resp = performRequest(t, router, "POST", routerGroupName+"/incident", body)
 
 	assert.Equal(t, http.StatusNotFound, resp.Code)
 
 	//Failure
-	body = []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","status": 1,"description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
+	body = []byte(`{"component_ref":"` + mock.ZeroTimeHex + `","status": 2,"description": "test", "occurrence_date": "` + time.Now().Format(time.RFC3339) + `"}`)
 	resp = performRequest(t, router, "POST", failureRouterGroupName+"/incident", body)
 
 	assert.Equal(t, http.StatusInternalServerError, resp.Code)
@@ -142,6 +148,11 @@ func TestController_List(t *testing.T) {
 	err = json.Unmarshal([]byte(resp.Body.String()), &data)
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
+
+	// Invalid: query parameters unresolved
+	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?unresolved=test", nil)
+
+	assert.Equal(t, http.StatusBadRequest, resp.Code)
 
 	// Invalid: query parameters year
 	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?year=0", nil)

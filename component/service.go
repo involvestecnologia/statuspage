@@ -57,7 +57,7 @@ func (s *componentService) ListComponents(refs []string) ([]models.Component, er
 		if c, exist := s.ComponentExists(map[string]interface{}{"ref": r}); exist {
 			comps = append(comps, c)
 		} else {
-			return []models.Component{}, errors.E(errors.ErrNotFound)
+			return []models.Component{}, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 		}
 	}
 	return comps, nil

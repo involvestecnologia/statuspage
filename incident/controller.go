@@ -2,6 +2,7 @@ package incident
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/involvestecnologia/statuspage/errors"
@@ -27,6 +28,9 @@ func (ctrl *Controller) Create(c *gin.Context) {
 		switch err.(type) {
 		case *errors.ErrNotFound:
 			c.AbortWithError(http.StatusNotFound, err)
+			return
+		case *errors.ErrIncidentStatusIgnored:
+			c.AbortWithError(http.StatusPreconditionFailed, err)
 			return
 		default:
 			c.AbortWithError(http.StatusInternalServerError, err)
@@ -56,8 +60,12 @@ func (ctrl *Controller) Find(c *gin.Context) {
 func (ctrl *Controller) List(c *gin.Context) {
 	mQ := c.Query("month")
 	yQ := c.Query("year")
-
-	incidents, err := ctrl.service.ListIncidents(yQ, mQ)
+	rQ, err := strconv.ParseBool(c.DefaultQuery("unresolved", "false"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, &errors.ErrInvalidQuery{Message: errors.ErrInvalidQueryMessage})
+		return
+	}
+	incidents, err := ctrl.service.ListIncidents(yQ, mQ, rQ)
 	if err != nil {
 		switch err.(type) {
 		case *errors.ErrInvalidYear:

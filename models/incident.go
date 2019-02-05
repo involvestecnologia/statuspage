@@ -16,9 +16,9 @@ type Incident struct {
 
 const (
 	// IncidentStatusOK means "This status is fully operational."
-	IncidentStatusOK = 0
+	IncidentStatusOK = 1
 	// IncidentStatusUnstable means "You received reports of a problem."
-	IncidentStatusUnstable = 1
+	IncidentStatusUnstable = 2
 	// IncidentStatusOutage means "A severe problem happened"
-	IncidentStatusOutage = 2
+	IncidentStatusOutage = 3
 )

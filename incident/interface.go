@@ -10,7 +10,7 @@ import (
 type Read interface {
 	Find(query map[string]interface{}) ([]models.Incident, error)
 	FindOne(query map[string]interface{}) (models.Incident, error)
-	List(startDt time.Time, endDt time.Time) ([]models.Incident, error)
+	List(startDt time.Time, endDt time.Time, unresolved bool) ([]models.Incident, error)
 }
 
 // Write implements the write action methods
@@ -31,7 +31,7 @@ type Service interface {
 	UpdateIncident(incident models.Incident) error
 	GetLastIncident(componentRef string) (models.Incident, error)
 	FindIncidents(query map[string]interface{}) ([]models.Incident, error)
-	ListIncidents(year string, month string) ([]models.Incident, error)
+	ListIncidents(year string, month string, unresolved bool) ([]models.Incident, error)
 	ValidateMonth(monthArg string) (int, error)
 	ValidateYear(yearArg string) (int, error)
 }

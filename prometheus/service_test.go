@@ -43,11 +43,22 @@ func TestPrometheusService_ProcessIncomingWebhookReturnNil(t *testing.T) {
 
 func TestPrometheusService_ProcessIncomingWebhookReturnIncidentErr(t *testing.T) {
 	newPrometheusMock := mock.PrometheusModel()
-	err := NewServicesMock(true, "incident").ProcessIncomingWebhook(newPrometheusMock["ModelWithoutRef"])
+	err := NewServicesMock(false, "incident").ProcessIncomingWebhook(newPrometheusMock["ModelWithoutRef"])
+	assert.Nil(t, err)
+
+	mock := NewServicesMock(false, "incident")
+	data := newPrometheusMock["ModelCompleteWithBadStatus"]
+	err = mock.ProcessIncomingWebhook(data)
+	assert.Nil(t, err)
+
+	data = newPrometheusMock["ModelCompleteWithBadStatus"]
+	data.Alerts[0].Incident.Status = 2
+	err = mock.ProcessIncomingWebhook(data)
 	assert.Nil(t, err)
 
 	err = NewServicesMock(true, "incident").ProcessIncomingWebhook(newPrometheusMock["ModelWithoutName"])
 	assert.NotNil(t, err)
+
 }
 
 func TestPrometheusService_ProcessIncomingWebhookReturnComponentErr(t *testing.T) {

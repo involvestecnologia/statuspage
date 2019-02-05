@@ -27,6 +27,11 @@ func NewMockComponentDAO() component.Repository {
 				Address: "",
 			},
 			{
+				Ref:     "Empty Component",
+				Name:    "Empty test",
+				Address: "",
+			},
+			{
 				Ref:     bson.NewObjectIdWithTime(bson.Now()).Hex(),
 				Name:    "test",
 				Address: "",

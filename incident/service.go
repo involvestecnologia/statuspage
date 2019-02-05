@@ -26,22 +26,41 @@ func (s *incidentService) CreateIncidents(incident models.Incident) error {
 		return err
 	}
 
+	if incident.Status == models.IncidentStatusOK {
+		// Certify that OK status are already resolved
+		incident.Resolved = true
+	}
+
 	lastIncident, err := s.GetLastIncident(incident.ComponentRef)
 	if err != nil {
+		switch err.(type) {
+		case *errors.ErrNotFound:
+			//No previous incidents found, just create the new incident
+			return s.repo.Insert(incident)
+		default:
+			return err
+		}
+	}
+
+	if lastIncident.Status == models.IncidentStatusOK {
+		//Last status was OK, just create the new incident.
 		return s.repo.Insert(incident)
 	}
 
-	if (incident.Status == models.IncidentStatusOK) && (lastIncident.Status != models.IncidentStatusOK) {
-		lastIncident.Status = incident.Status
-		lastIncident.Duration = incident.Duration
+	if incident.Status == models.IncidentStatusOK {
+		//Last status was NOT OK and new status is OK.
+		//Update resolved and duration from last, then create new incident
 		lastIncident.Resolved = true
-		return s.UpdateIncident(lastIncident)
+		lastIncident.Duration = time.Since(lastIncident.Date)
+		s.UpdateIncident(lastIncident)
+		return s.repo.Insert(incident)
 	}
 
 	if incident.Status > lastIncident.Status {
+		//Last status was NOT OK and new status is more critical.
+		//Update last incident status.
 		lastIncident.Status = incident.Status
 		lastIncident.Description = incident.Description
-		lastIncident.Resolved = false
 		return s.UpdateIncident(lastIncident)
 	}
 
@@ -60,11 +79,12 @@ func (s *incidentService) GetLastIncident(componentRef string) (models.Incident,
 	return s.repo.FindOne(map[string]interface{}{"component_ref": componentRef})
 }
 
-func (s *incidentService) ListIncidents(year string, month string) ([]models.Incident, error) {
+func (s *incidentService) ListIncidents(year string, month string, unresolved bool) ([]models.Incident, error) {
 	var iComp []models.Incident
-	var start, end time.Time
+	var start time.Time
+	end := time.Now()
 	if year == "" && month == "" {
-		return s.repo.List(start, end)
+		return s.repo.List(start, end, unresolved)
 	}
 
 	m, err := s.ValidateMonth(month)
@@ -84,13 +104,13 @@ func (s *incidentService) ListIncidents(year string, month string) ([]models.Inc
 	if m == -1 {
 		start = time.Date(y, 1, 1, 0, 0, 0, 0, time.UTC)
 		end = time.Date(y+1, 1, 0, 23, 59, 59, 0, time.UTC)
-		return s.repo.List(start, end)
+		return s.repo.List(start, end, unresolved)
 	}
 
 	start = time.Date(y, time.Month(m), 1, 0, 0, 0, 0, time.UTC)
 	end = time.Date(y, time.Month(m+1), 0, 23, 59, 59, 0, time.UTC)
 
-	return s.repo.List(start, end)
+	return s.repo.List(start, end, unresolved)
 }
 
 func (s *incidentService) ValidateMonth(month string) (int, error) {

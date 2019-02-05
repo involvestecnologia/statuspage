@@ -15,7 +15,7 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 					Incident: models.Incident{
 						ComponentRef: "123123",
 						Description:  "status ok",
-						Status:       0,
+						Status:       1,
 					},
 					Component: models.Component{
 						Ref:     "123123",
@@ -35,7 +35,7 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 					Incident: models.Incident{
 						ComponentRef: ZeroTimeHex,
 						Description:  "status ok",
-						Status:       0,
+						Status:       1,
 					},
 					Component: models.Component{
 						Ref:     ZeroTimeHex,
@@ -68,7 +68,7 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 					Incident: models.Incident{
 						ComponentRef: ZeroTimeHex,
 						Description:  "status ok",
-						Status:       0,
+						Status:       1,
 					},
 					StartsAt:     time.Now(),
 					EndsAt:       time.Now(),
@@ -113,7 +113,7 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 					Incident: models.Incident{
 						ComponentRef: "123123",
 						Description:  "status ok",
-						Status:       2,
+						Status:       3,
 					},
 					Component: models.Component{
 						Ref:     "123123",
