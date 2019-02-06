@@ -9,14 +9,17 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
+//Controller contains all the available handlers
 type Controller struct {
 	service Service
 }
 
+//NewIncidentController creates a new Controller
 func NewIncidentController(service Service) *Controller {
 	return &Controller{service: service}
 }
 
+//Create it's the handler function for Component creation endpoints
 func (ctrl *Controller) Create(c *gin.Context) {
 	var newIncident models.Incident
 	if err := c.ShouldBindJSON(&newIncident); err != nil {
@@ -40,6 +43,7 @@ func (ctrl *Controller) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, "")
 }
 
+//Find it's the handler function for filtered Component retrieve endpoints
 func (ctrl *Controller) Find(c *gin.Context) {
 	queryBy := c.DefaultQuery("search", "component_ref")
 	queryValue := c.Param("componentRef")
@@ -57,6 +61,7 @@ func (ctrl *Controller) Find(c *gin.Context) {
 	c.JSON(http.StatusOK, incidents)
 }
 
+//List it's the handler function for Component listing endpoints
 func (ctrl *Controller) List(c *gin.Context) {
 	mQ := c.Query("month")
 	yQ := c.Query("year")

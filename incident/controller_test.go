@@ -27,8 +27,8 @@ var componentService = component.NewService(mock.NewMockComponentDAO())
 func init() {
 	incidentService := incident.NewService(mock.NewMockIncidentDAO(), componentService)
 	incidentFailureService := incident.NewService(mock.NewMockFailureIncidentDAO(), componentService)
-	incident.IncidentRouter(incidentService, router.Group(routerGroupName))
-	incident.IncidentRouter(incidentFailureService, router.Group(failureRouterGroupName))
+	incident.Router(incidentService, router.Group(routerGroupName))
+	incident.Router(incidentFailureService, router.Group(failureRouterGroupName))
 }
 
 func performRequest(t *testing.T, r http.Handler, method, path string, body []byte) *httptest.ResponseRecorder {

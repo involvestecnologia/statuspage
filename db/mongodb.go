@@ -10,7 +10,7 @@ import (
 func InitMongo(arg string) *mgo.Session {
 	session, err := mgo.Dial(arg)
 	if err != nil {
-		log.Panicf("%s\n", err)
+		log.Panicf("%s\n", err.Error())
 	}
 	return session
 }

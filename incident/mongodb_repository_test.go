@@ -71,6 +71,7 @@ func TestIncidentMongoDB_Repository_Find(t *testing.T) {
 	}
 
 	incidents, err = repo.Find(map[string]interface{}{"component_ref": "Invalid Ref"})
+	assert.NotNil(t, err)
 	assert.Nil(t, incidents)
 
 	incidents, err = repo.Find(map[string]interface{}{"invalidQuery": "SomeValue"})

@@ -23,8 +23,8 @@ var router = gin.Default()
 func init() {
 	componentService := component.NewService(mock.NewMockComponentDAO())
 	componentFailureService := component.NewService(mock.NewMockFailureComponentDAO())
-	component.ComponentRouter(componentService, router.Group(routerGroupName))
-	component.ComponentRouter(componentFailureService, router.Group(failureRouterGroupName))
+	component.Router(componentService, router.Group(routerGroupName))
+	component.Router(componentFailureService, router.Group(failureRouterGroupName))
 }
 
 func performRequest(t *testing.T, r http.Handler, method, path string, body []byte) *httptest.ResponseRecorder {

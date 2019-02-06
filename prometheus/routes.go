@@ -6,7 +6,8 @@ import (
 	"github.com/involvestecnologia/statuspage/incident"
 )
 
-func PrometheusRouter(incident incident.Service, component component.Service, router *gin.RouterGroup) {
+//Router initiate a new Service and Controller,then adds all available endpoints to a Gin RouterGroup
+func Router(incident incident.Service, component component.Service, router *gin.RouterGroup) {
 	prometheusService := NewPrometheusService(incident, component)
 	prometheusController := NewPrometheusController(prometheusService)
 	incidentRouter := router.Group("/prometheus")

@@ -44,6 +44,7 @@ func TestClientService_CreateClient(t *testing.T) {
 	}
 	_, err = s.CreateClient(c3)
 	assert.NotNil(t, err)
+
 }
 func TestClientService_FindClient(t *testing.T) {
 	s := client.NewService(mock.NewMockClientDAO(), component.NewService(mock.NewMockComponentDAO()))
@@ -108,9 +109,13 @@ func TestClientService_UpdateClient(t *testing.T) {
 
 	assert.Equal(t, c, c2)
 
+	c.Name = "Last Client"
+	err = s.UpdateClient(mock.ZeroTimeHex, c)
+	assert.NotNil(t, err)
+
 	c3 := models.Client{
 		Ref:       c.Ref,
-		Name:      "test2",
+		Name:      "test3",
 		Resources: []string{"Invalid Ref", "Another invalid Ref"},
 	}
 	err = s.UpdateClient(mock.ZeroTimeHex, c3)

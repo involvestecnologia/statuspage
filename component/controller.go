@@ -8,15 +8,18 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type ComponentController struct {
+//Controller contains all the available handlers
+type Controller struct {
 	service Service
 }
 
-func NewComponentController(service Service) *ComponentController {
-	return &ComponentController{service: service}
+//NewComponentController creates a new Controller
+func NewComponentController(service Service) *Controller {
+	return &Controller{service: service}
 }
 
-func (ctrl *ComponentController) Create(c *gin.Context) {
+//Create it's the handler function for Component creation endpoints
+func (ctrl *Controller) Create(c *gin.Context) {
 	var newComponent models.Component
 	if err := c.ShouldBindJSON(&newComponent); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -40,7 +43,8 @@ func (ctrl *ComponentController) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, ref)
 }
 
-func (ctrl *ComponentController) Update(c *gin.Context) {
+//Update it's the handler function for Component update endpoints
+func (ctrl *Controller) Update(c *gin.Context) {
 	id := c.Param("ref")
 	var newComponent models.Component
 	if err := c.ShouldBindJSON(&newComponent); err != nil {
@@ -64,7 +68,8 @@ func (ctrl *ComponentController) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, "")
 }
 
-func (ctrl *ComponentController) Find(c *gin.Context) {
+//Find it's the handler function for filtered Component retrieve endpoints
+func (ctrl *Controller) Find(c *gin.Context) {
 	queryBy := c.DefaultQuery("search", "ref")
 	ref := c.Param("ref")
 	component, err := ctrl.service.FindComponent(map[string]interface{}{queryBy: ref})
@@ -81,7 +86,8 @@ func (ctrl *ComponentController) Find(c *gin.Context) {
 	c.JSON(http.StatusOK, component)
 }
 
-func (ctrl *ComponentController) List(c *gin.Context) {
+//List it's the handler function for Component listing endpoints
+func (ctrl *Controller) List(c *gin.Context) {
 	var comps models.ComponentRefs
 	c.ShouldBindJSON(&comps)
 	components, err := ctrl.service.ListComponents(comps.Refs)
@@ -98,7 +104,8 @@ func (ctrl *ComponentController) List(c *gin.Context) {
 	c.JSON(http.StatusOK, components)
 }
 
-func (ctrl *ComponentController) Delete(c *gin.Context) {
+//Delete it's the handler function for Component deletion endpoints
+func (ctrl *Controller) Delete(c *gin.Context) {
 	ref := c.Param("ref")
 	err := ctrl.service.RemoveComponent(ref)
 	if err != nil {

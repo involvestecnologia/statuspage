@@ -1,65 +1,123 @@
 package errors
 
 const (
-	ErrAlreadyExistsMessage              = "Already exists"
-	ErrInvalidRefMessage                 = "Invalid reference %s"
-	ErrComponentNameIsEmptyMessage       = "Component name shouldn't be empty"
-	ErrInvalidQueryMessage               = "Invalid query"
-	ErrNotFoundMessage                   = "Not found"
-	ErrComponentRefAlreadyExistsMessage  = "Component ref already exists"
+	//ErrAlreadyExistsMessage is the resource already exists default message
+	ErrAlreadyExistsMessage = "Already exists"
+
+	//ErrInvalidRefMessage is the invalid reference default template message
+	ErrInvalidRefMessage = "Invalid reference %s"
+
+	//ErrComponentNameIsEmptyMessage is the empty component name default message
+	ErrComponentNameIsEmptyMessage = "Component name shouldn't be empty"
+
+	//ErrInvalidQueryMessage is the invalid query attempt default message
+	ErrInvalidQueryMessage = "Invalid query"
+
+	//ErrNotFoundMessage is the resource not found default message
+	ErrNotFoundMessage = "Not found"
+
+	//ErrComponentRefAlreadyExistsMessage is the Component reference already in use default message
+	ErrComponentRefAlreadyExistsMessage = "Component ref already exists"
+
+	//ErrComponentNameAlreadyExistsMessage is the Component name already in use default message
 	ErrComponentNameAlreadyExistsMessage = "Component name already exists"
-	ErrClientRefAlreadyExistsMessage     = "Client ref already exists"
-	ErrClientNameAlreadyExistsMessage    = "Client name already exists"
-	ErrInvalidMonthMessage               = "Invalid month"
-	ErrInvalidYearMessage                = "Invalid year"
-	ErrTriggerUnavailableMessage         = "Unavailable Trigger"
-	ErrInvalidIncidentJSONDateMessage    = "Field occurrence_date not found"
-	ErrMongoFailuereMessage              = "Failed to perform operation on MongoDB"
-	ErrIncidentStatusIgnoredMessage      = "Status didn't close last incident or escaled it's status"
+
+	//ErrClientRefAlreadyExistsMessage is the Client reference already in use default message
+	ErrClientRefAlreadyExistsMessage = "Client ref already exists"
+
+	//ErrClientNameAlreadyExistsMessage is the Client name already in use default message
+	ErrClientNameAlreadyExistsMessage = "Client name already exists"
+
+	//ErrInvalidMonthMessage is the invalid month value default message
+	ErrInvalidMonthMessage = "Invalid month"
+
+	//ErrInvalidYearMessage is the invalid year value default message
+	ErrInvalidYearMessage = "Invalid year"
+
+	//ErrTriggerUnavailableMessage is the trigger unavailable default message
+	ErrTriggerUnavailableMessage = "Unavailable Trigger"
+
+	//ErrInvalidIncidentJSONDateMessage is the invalid occourence_date value or format default message
+	ErrInvalidIncidentJSONDateMessage = "Field occurrence_date not found"
+
+	//ErrMongoFailuereMessage is the mongo panic failure default message
+	ErrMongoFailuereMessage = "Failed to perform operation on MongoDB"
+
+	//ErrIncidentStatusIgnoredMessage is the ignored Incident creation default message
+	ErrIncidentStatusIgnoredMessage = "Status didn't close last incident or escaled it's status"
 )
 
+//ErrAlreadyExists is a error type throwed when the resource already exists
 type ErrAlreadyExists struct {
 	Message string
 }
+
+//ErrInvalidRef is a error type throwed when a reference is invalid
 type ErrInvalidRef struct {
 	Message string
 }
+
+//ErrComponentNameIsEmpty is a error type throwed when a name attribute of a Component is empty
 type ErrComponentNameIsEmpty struct {
 	Message string
 }
+
+//ErrInvalidQuery is a error type throwed when a query attempt is invalid
 type ErrInvalidQuery struct {
 	Message string
 }
+
+//ErrNotFound is a error type throwed when a resource was not found
 type ErrNotFound struct {
 	Message string
 }
+
+//ErrComponentRefAlreadyExists is a error type throwed when a Component reference is already in use
 type ErrComponentRefAlreadyExists struct {
 	Message string
 }
+
+//ErrComponentNameAlreadyExists is a error type throwed when a Component name is already in use
 type ErrComponentNameAlreadyExists struct {
 	Message string
 }
+
+//ErrClientRefAlreadyExists is a error type throwed when a Client reference is already in use
 type ErrClientRefAlreadyExists struct {
 	Message string
 }
+
+//ErrClientNameAlreadyExists is a error type throwed when a Client name is already in use
 type ErrClientNameAlreadyExists struct {
 	Message string
 }
+
+//ErrInvalidMonth is a error type throwed when a invalid month value is provided
 type ErrInvalidMonth struct {
 	Message string
 }
+
+//ErrInvalidYear is a error type throwed when a invalid year value is provided
 type ErrInvalidYear struct {
 	Message string
 }
+
+//ErrTriggerUnavailable is a error type throwed when a trigger type is no available
 type ErrTriggerUnavailable struct {
 	Message string
 }
+
+//ErrInvalidIncidentJSONDate is a error type throwed when the date value of a Incident is in a invalid format
 type ErrInvalidIncidentJSONDate struct {
 	Message string
 }
+
+//ErrMongoFailuere is a error type throwed when a panic occoured when connecting to MongoDB
 type ErrMongoFailuere struct {
 	Message string
 }
+
+//ErrIncidentStatusIgnored is a error type throwed when a Incident status does not resolve last neither increase the criticity
 type ErrIncidentStatusIgnored struct {
 	Message string
 }

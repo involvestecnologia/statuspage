@@ -3,14 +3,15 @@ package prometheus
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/gin-gonic/gin"
 	"github.com/involvestecnologia/statuspage/component"
 	"github.com/involvestecnologia/statuspage/incident"
 	"github.com/involvestecnologia/statuspage/mock"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 var router = gin.New()
@@ -20,7 +21,7 @@ func init() {
 	incidentDAO := mock.NewMockIncidentDAO()
 	componentService := component.NewService(componentDAO)
 	incidentService := incident.NewService(incidentDAO, componentService)
-	PrometheusRouter(incidentService, componentService, router.Group("/v1"))
+	Router(incidentService, componentService, router.Group("/v1"))
 }
 
 func performRequest(t *testing.T, r http.Handler, method, path string, body []byte) *httptest.ResponseRecorder {

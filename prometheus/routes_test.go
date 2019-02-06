@@ -19,7 +19,7 @@ func TestPrometheusRouter_PrometheusRouter(t *testing.T) {
 	componentService := component.NewService(componentDAO)
 	incidentService := incident.NewService(incidentDAO, componentService)
 
-	PrometheusRouter(incidentService, componentService, router.Group("/v1"))
+	Router(incidentService, componentService, router.Group("/v1"))
 	r := router.Routes()
 
 	for _, v := range r {

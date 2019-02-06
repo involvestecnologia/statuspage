@@ -9,6 +9,7 @@ type componentService struct {
 	repo Repository
 }
 
+//NewService creates implementation of the Service interface
 func NewService(r Repository) Service {
 	return &componentService{repo: r}
 }

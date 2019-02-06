@@ -4,7 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ComponentRouter(componentService Service, router *gin.RouterGroup) {
+//Router creates a new Controller and add all available endpoints to a Gin RouterGroup
+func Router(componentService Service, router *gin.RouterGroup) {
 
 	componentController := NewComponentController(componentService)
 

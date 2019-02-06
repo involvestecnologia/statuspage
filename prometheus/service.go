@@ -12,6 +12,7 @@ type prometheusService struct {
 	component component.Service
 }
 
+//NewPrometheusService creates implementation of the Service interface
 func NewPrometheusService(incident incident.Service, component component.Service) Service {
 	return &prometheusService{incident: incident, component: component}
 }

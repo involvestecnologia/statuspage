@@ -14,6 +14,7 @@ type incidentService struct {
 	repo      Repository
 }
 
+//NewService creates implementation of the Service interface
 func NewService(r Repository, component component.Service) Service {
 	return &incidentService{
 		component: component,
@@ -64,7 +65,7 @@ func (s *incidentService) CreateIncidents(incident models.Incident) error {
 		return s.UpdateIncident(lastIncident)
 	}
 
-	return &errors.ErrIncidentStatusIgnored{errors.ErrIncidentStatusIgnoredMessage}
+	return &errors.ErrIncidentStatusIgnored{Message: errors.ErrIncidentStatusIgnoredMessage}
 }
 
 func (s *incidentService) UpdateIncident(incident models.Incident) error {

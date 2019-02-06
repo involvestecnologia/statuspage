@@ -8,15 +8,18 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type ClientController struct {
+//Controller contains all the available handlers
+type Controller struct {
 	service Service
 }
 
-func NewClientController(service Service) *ClientController {
-	return &ClientController{service: service}
+//NewClientController creates a new Controller
+func NewClientController(service Service) *Controller {
+	return &Controller{service: service}
 }
 
-func (ctrl *ClientController) Create(c *gin.Context) {
+//Create it's the handler function for Client creation endpoints
+func (ctrl *Controller) Create(c *gin.Context) {
 	var newClient models.Client
 	if err := c.ShouldBindJSON(&newClient); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -42,7 +45,8 @@ func (ctrl *ClientController) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, ref)
 }
 
-func (ctrl *ClientController) Update(c *gin.Context) {
+//Update it's the handler function for Client update endpoints
+func (ctrl *Controller) Update(c *gin.Context) {
 	var client models.Client
 	if err := c.ShouldBindJSON(&client); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -66,7 +70,8 @@ func (ctrl *ClientController) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, "")
 }
 
-func (ctrl *ClientController) Find(c *gin.Context) {
+//Find it's the handler function for filtered Client retrieve endpoints
+func (ctrl *Controller) Find(c *gin.Context) {
 	queryBy := c.DefaultQuery("search", "ref")
 	qValue := c.Param("clientRef")
 	client, err := ctrl.service.FindClient(map[string]interface{}{queryBy: qValue})
@@ -83,7 +88,8 @@ func (ctrl *ClientController) Find(c *gin.Context) {
 	c.JSON(http.StatusOK, client)
 }
 
-func (ctrl *ClientController) Delete(c *gin.Context) {
+//Delete it's the handler function for Client deletion endpoints
+func (ctrl *Controller) Delete(c *gin.Context) {
 	clientID := c.Param("clientRef")
 	err := ctrl.service.RemoveClient(clientID)
 	if err != nil {
@@ -99,7 +105,8 @@ func (ctrl *ClientController) Delete(c *gin.Context) {
 	c.JSON(http.StatusNoContent, "")
 }
 
-func (ctrl *ClientController) List(c *gin.Context) {
+//List it's the handler function for Client listing endpoints
+func (ctrl *Controller) List(c *gin.Context) {
 	clients, err := ctrl.service.ListClients()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)

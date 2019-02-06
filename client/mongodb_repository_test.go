@@ -106,7 +106,7 @@ func TestClientMongoDB_Repository_Delete(t *testing.T) {
 	err = repo.Delete(c.Ref)
 	assert.Nil(t, err)
 
-	c2, err = repo.Find(map[string]interface{}{"ref": c.Ref})
+	_, err = repo.Find(map[string]interface{}{"ref": c.Ref})
 	assert.NotNil(t, err)
 
 	err = repo.Delete(c.Ref)

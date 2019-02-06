@@ -25,8 +25,8 @@ var compSvc = component.NewService(mock.NewMockComponentDAO())
 func init() {
 	clientService := client.NewService(mock.NewMockClientDAO(), compSvc)
 	clientFailureService := client.NewService(mock.NewMockFailureClientDAO(), compSvc)
-	client.ClientRouter(clientService, router.Group(routerGroupName))
-	client.ClientRouter(clientFailureService, router.Group(failureRouterGroupName))
+	client.Router(clientService, router.Group(routerGroupName))
+	client.Router(clientFailureService, router.Group(failureRouterGroupName))
 }
 
 func performRequest(t *testing.T, r http.Handler, method, path string, body []byte) *httptest.ResponseRecorder {

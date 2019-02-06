@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Incident represents some event categorized by one three possible status
+// Incident represents some event categorized by one of three possible status
 type Incident struct {
 	Status       int           `json:"status" binding:"required"`
 	Resolved     bool          `json:"resolved"`

@@ -36,10 +36,10 @@ func main() {
 	clientService := client.NewService(clientRepository, componentService)
 
 	// Initialize routers
-	component.ComponentRouter(componentService, v1)
-	incident.IncidentRouter(incidentService, v1)
-	client.ClientRouter(clientService, v1)
-	prometheus.PrometheusRouter(incidentService, componentService, v1)
+	component.Router(componentService, v1)
+	incident.Router(incidentService, v1)
+	client.Router(clientService, v1)
+	prometheus.Router(incidentService, componentService, v1)
 
 	router.Run(":8080")
 }

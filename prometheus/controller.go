@@ -7,15 +7,18 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type prometheusController struct {
+//Controller contains all the available handlers
+type Controller struct {
 	service Service
 }
 
-func NewPrometheusController(service Service) *prometheusController {
-	return &prometheusController{service: service}
+//NewPrometheusController creates a new Controller
+func NewPrometheusController(service Service) *Controller {
+	return &Controller{service: service}
 }
 
-func (prom *prometheusController) Incoming(c *gin.Context) {
+//Incoming it's the handler function for new Incidents from Prometheus AlertManager
+func (prom *Controller) Incoming(c *gin.Context) {
 	var incoming models.PrometheusIncomingWebhook
 	if err := c.ShouldBindJSON(&incoming); err != nil {
 		c.JSON(http.StatusBadRequest, "missing required parameter "+err.Error())

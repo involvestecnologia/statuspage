@@ -15,6 +15,7 @@ type mongoRepository struct {
 	db *mgo.Session
 }
 
+//NewMongoRepository creates a new Repository implementation using the MongoDB as database
 func NewMongoRepository(session *mgo.Session) Repository {
 	return &mongoRepository{db: session}
 }
