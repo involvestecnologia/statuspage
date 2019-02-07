@@ -9,15 +9,18 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type WebhookController struct {
+//Controller contains all the available handlers
+type Controller struct {
 	service Service
 }
 
-func NewWebhookController(service Service) *WebhookController {
-	return &WebhookController{service: service}
+//NewWebhookController creates a new Controller
+func NewWebhookController(service Service) *Controller {
+	return &Controller{service: service}
 }
 
-func (ctrl *WebhookController) Create(c *gin.Context) {
+//Create it's the handler function for Webhook creation endpoints
+func (ctrl *Controller) Create(c *gin.Context) {
 	var newWebhook models.Webhook
 	if err := c.ShouldBindJSON(&newWebhook); err != nil {
 		c.JSON(http.StatusBadRequest, "Missing required parameter")
@@ -35,7 +38,8 @@ func (ctrl *WebhookController) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, "")
 }
 
-func (ctrl *WebhookController) Find(c *gin.Context) {
+//Find it's the handler function to retrieve Webhooks
+func (ctrl *Controller) Find(c *gin.Context) {
 	id := c.Param("id")
 	webhook, err := ctrl.service.FindWebhook(id)
 	if err != nil {
@@ -55,11 +59,12 @@ func (ctrl *WebhookController) Find(c *gin.Context) {
 
 }
 
-func (ctrl *WebhookController) Run(c *gin.Context) {
-
+//Run it's the handler function to execute Webhooks
+func (ctrl *Controller) Run(c *gin.Context) {
 }
 
-func (ctrl *WebhookController) Update(c *gin.Context) {
+//Update it's the handler function for Webhook update endpoints
+func (ctrl *Controller) Update(c *gin.Context) {
 	r := strings.Split(c.Request.RequestURI, "/")
 	webhookType := r[1]
 	id := c.Param("id")
@@ -95,7 +100,8 @@ func (ctrl *WebhookController) Update(c *gin.Context) {
 
 }
 
-func (ctrl *WebhookController) Delete(c *gin.Context) {
+//Delete it's the handler function for Webhook deletion endpoints
+func (ctrl *Controller) Delete(c *gin.Context) {
 	id := c.Param("id")
 
 	err := ctrl.service.Delete(id)
@@ -116,7 +122,8 @@ func (ctrl *WebhookController) Delete(c *gin.Context) {
 
 }
 
-func (ctrl *WebhookController) List(c *gin.Context) {
+//List it's the handler function for Webhook listing endpoints
+func (ctrl *Controller) List(c *gin.Context) {
 	r := strings.Split(c.Request.RequestURI, "/")
 	webhookType := r[1]
 

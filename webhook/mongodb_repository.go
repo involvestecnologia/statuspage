@@ -9,19 +9,20 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type MongoRepository struct {
+type mongoRepository struct {
 	db *mgo.Session
 }
 
-func NewMongoRepository(session *mgo.Session) *MongoRepository {
-	return &MongoRepository{db: session}
+//NewMongoRepository creates a new Repository implementation using the MongoDB as database
+func NewMongoRepository(session *mgo.Session) Repository {
+	return &mongoRepository{db: session}
 }
 
-func (r *MongoRepository) GetCurrentSession() *mgo.Session {
+func (r *mongoRepository) GetCurrentSession() *mgo.Session {
 	return r.db
 }
 
-func (r *MongoRepository) FindWebhook(id string) (models.Webhook, error) {
+func (r *mongoRepository) FindWebhook(id string) (models.Webhook, error) {
 	var wh models.Webhook
 	if !bson.IsObjectIdHex(id) {
 		return wh, &errors.ErrAlreadyExists{Message: errors.ErrAlreadyExistsMessage}
@@ -34,7 +35,7 @@ func (r *MongoRepository) FindWebhook(id string) (models.Webhook, error) {
 	return wh, err
 }
 
-func (r *MongoRepository) FindWebhookByNameAndType(name string, webhookType string) (models.Webhook, error) {
+func (r *mongoRepository) FindWebhookByNameAndType(name string, webhookType string) (models.Webhook, error) {
 	var wh models.Webhook
 	webhookQ := bson.M{"name": name, "type": webhookType}
 	err := r.db.DB("status").C("Webhooks").Find(webhookQ).One(&wh)
@@ -44,7 +45,7 @@ func (r *MongoRepository) FindWebhookByNameAndType(name string, webhookType stri
 	return wh, err
 }
 
-func (r *MongoRepository) ListWebhookByType(webhookType string) ([]models.Webhook, error) {
+func (r *mongoRepository) ListWebhookByType(webhookType string) ([]models.Webhook, error) {
 	var whs []models.Webhook
 	webhookQ := bson.M{"type": webhookType}
 	err := r.db.DB("status").C("Webhooks").Find(webhookQ).All(&whs)
@@ -54,11 +55,11 @@ func (r *MongoRepository) ListWebhookByType(webhookType string) ([]models.Webhoo
 	return whs, err
 }
 
-func (r *MongoRepository) CreateWebhook(webhook models.Webhook) error {
+func (r *mongoRepository) CreateWebhook(webhook models.Webhook) error {
 	return r.db.DB("status").C("Webhooks").Insert(webhook)
 }
 
-func (r *MongoRepository) UpdateWebhook(id string, webhook models.Webhook) error {
+func (r *mongoRepository) UpdateWebhook(id string, webhook models.Webhook) error {
 	if !bson.IsObjectIdHex(id) {
 		return &errors.ErrAlreadyExists{Message: errors.ErrAlreadyExistsMessage}
 	}
@@ -66,7 +67,7 @@ func (r *MongoRepository) UpdateWebhook(id string, webhook models.Webhook) error
 	return r.db.DB("status").C("Webhooks").Update(webhookQ, webhook)
 }
 
-func (r *MongoRepository) DeleteWebhook(id string) error {
+func (r *mongoRepository) DeleteWebhook(id string) error {
 	if !bson.IsObjectIdHex(id) {
 		return &errors.ErrAlreadyExists{Message: errors.ErrAlreadyExistsMessage}
 	}

@@ -9,12 +9,13 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type MockClientDAO struct {
+type clientDAO struct {
 	clients []models.Client
 }
 
+//NewMockClientDAO creates a new Client Repository Mock
 func NewMockClientDAO() client.Repository {
-	return &MockClientDAO{
+	return &clientDAO{
 		clients: []models.Client{
 			{
 				Ref:  ZeroTimeHex,
@@ -36,7 +37,7 @@ func NewMockClientDAO() client.Repository {
 	}
 }
 
-func (m *MockClientDAO) Delete(clientRef string) error {
+func (m *clientDAO) Delete(clientRef string) error {
 	for i, c := range m.clients {
 		if c.Ref == clientRef {
 			m.clients = append(m.clients[:i], m.clients[i+1:]...)
@@ -46,7 +47,7 @@ func (m *MockClientDAO) Delete(clientRef string) error {
 	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
-func (m *MockClientDAO) Find(q map[string]interface{}) (models.Client, error) {
+func (m *clientDAO) Find(q map[string]interface{}) (models.Client, error) {
 	if keyValue, hasKey := q["ref"]; hasKey {
 		for _, c := range m.clients {
 			if c.Ref == keyValue {
@@ -68,7 +69,7 @@ func (m *MockClientDAO) Find(q map[string]interface{}) (models.Client, error) {
 	return models.Client{}, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
-func (m *MockClientDAO) Insert(client models.Client) (string, error) {
+func (m *clientDAO) Insert(client models.Client) (string, error) {
 	if client.Ref == "" {
 		client.Ref = bson.NewObjectId().Hex()
 	}
@@ -76,11 +77,11 @@ func (m *MockClientDAO) Insert(client models.Client) (string, error) {
 	return client.Ref, nil
 }
 
-func (m *MockClientDAO) List() ([]models.Client, error) {
+func (m *clientDAO) List() ([]models.Client, error) {
 	return m.clients, nil
 }
 
-func (m *MockClientDAO) Update(clientRef string, client models.Client) error {
+func (m *clientDAO) Update(clientRef string, client models.Client) error {
 	for i, c := range m.clients {
 		if c.Ref == clientRef {
 			m.clients[i].Name = client.Name
@@ -91,25 +92,26 @@ func (m *MockClientDAO) Update(clientRef string, client models.Client) error {
 	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
-type MockFailureClientDAO struct {
+type failureClientDAO struct {
 }
 
+//NewMockFailureClientDAO creates a new Client Repository Mock that fails in every operation
 func NewMockFailureClientDAO() client.Repository {
-	return &MockFailureClientDAO{}
+	return &failureClientDAO{}
 }
 
-func (f *MockFailureClientDAO) Find(q map[string]interface{}) (models.Client, error) {
+func (f *failureClientDAO) Find(q map[string]interface{}) (models.Client, error) {
 	return models.Client{}, fmt.Errorf("DAO Failure")
 }
-func (f *MockFailureClientDAO) Delete(clientRef string) error {
+func (f *failureClientDAO) Delete(clientRef string) error {
 	return fmt.Errorf("DAO Failure")
 }
-func (f *MockFailureClientDAO) Insert(client models.Client) (string, error) {
+func (f *failureClientDAO) Insert(client models.Client) (string, error) {
 	return "", fmt.Errorf("DAO Failure")
 }
-func (f *MockFailureClientDAO) List() ([]models.Client, error) {
+func (f *failureClientDAO) List() ([]models.Client, error) {
 	return []models.Client{}, fmt.Errorf("DAO Failure")
 }
-func (f *MockFailureClientDAO) Update(clientRef string, client models.Client) error {
+func (f *failureClientDAO) Update(clientRef string, client models.Client) error {
 	return fmt.Errorf("DAO Failure")
 }

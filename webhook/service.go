@@ -7,12 +7,13 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type WebhookService struct {
+type webhookService struct {
 	repo Repository
 }
 
-func NewService(r Repository) *WebhookService {
-	return &WebhookService{repo: r}
+//NewService creates implementation of the Service interface
+func NewService(r Repository) Service {
+	return &webhookService{repo: r}
 }
 
 type trigger func() error
@@ -27,7 +28,7 @@ var availableTriggers = map[string]trigger{
 	"client.deletion":    clientDeletionTrigger,
 }
 
-func (s *WebhookService) TriggerWebhook(element interface{}, action string) error {
+func (s *webhookService) TriggerWebhook(element interface{}, action string) error {
 	trigger := availableTriggers[action]
 	if trigger == nil {
 		return &errors.ErrTriggerUnavailable{Message: errors.ErrTriggerUnavailableMessage}
@@ -74,35 +75,35 @@ func clientDeletionTrigger() error {
 	return nil
 }
 
-func (s *WebhookService) WebhookExists(webhook models.Webhook) bool {
+func (s *webhookService) WebhookExists(webhook models.Webhook) bool {
 	_, err := s.repo.FindWebhookByNameAndType(webhook.Name, webhook.Type)
 	return err == nil
 }
 
-func (s *WebhookService) Create(webhook models.Webhook) error {
+func (s *webhookService) Create(webhook models.Webhook) error {
 	return s.repo.CreateWebhook(webhook)
 }
 
-func (s *WebhookService) List(webhookType string) ([]models.Webhook, error) {
+func (s *webhookService) List(webhookType string) ([]models.Webhook, error) {
 	return s.repo.ListWebhookByType(webhookType)
 }
 
-func (s *WebhookService) Update(id string, webhook models.Webhook) error {
+func (s *webhookService) Update(id string, webhook models.Webhook) error {
 	return s.repo.UpdateWebhook(id, webhook)
 }
 
-func (s *WebhookService) Delete(id string) error {
+func (s *webhookService) Delete(id string) error {
 	return s.repo.DeleteWebhook(id)
 }
 
-func (s *WebhookService) FindWebhook(id string) (models.Webhook, error) {
+func (s *webhookService) FindWebhook(id string) (models.Webhook, error) {
 	return s.repo.FindWebhook(id)
 }
 
-func (s *WebhookService) ListWebhookByType(webhookType string) ([]models.Webhook, error) {
+func (s *webhookService) ListWebhookByType(webhookType string) ([]models.Webhook, error) {
 	return s.repo.ListWebhookByType(webhookType)
 }
 
-func (s *WebhookService) FindWebhookByNameAndType(name string, webhookType string) (models.Webhook, error) {
+func (s *webhookService) FindWebhookByNameAndType(name string, webhookType string) (models.Webhook, error) {
 	return s.repo.FindWebhookByNameAndType(name, webhookType)
 }

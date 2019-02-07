@@ -9,12 +9,13 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type MockIncidentDAO struct {
+type incidentDAO struct {
 	incidents []models.Incident
 }
 
+// NewMockIncidentDAO creates a new Incident Repository Mock
 func NewMockIncidentDAO() incident.Repository {
-	return &MockIncidentDAO{
+	return &incidentDAO{
 		incidents: []models.Incident{
 			{
 				ComponentRef: ZeroTimeHex,
@@ -32,7 +33,7 @@ func NewMockIncidentDAO() incident.Repository {
 	}
 }
 
-func (m *MockIncidentDAO) Find(query map[string]interface{}) ([]models.Incident, error) {
+func (m *incidentDAO) Find(query map[string]interface{}) ([]models.Incident, error) {
 	var incidents []models.Incident
 
 	for _, i := range m.incidents {
@@ -45,8 +46,7 @@ func (m *MockIncidentDAO) Find(query map[string]interface{}) ([]models.Incident,
 	}
 	return incidents, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
-
-func (m *MockIncidentDAO) FindOne(query map[string]interface{}) (models.Incident, error) {
+func (m *incidentDAO) FindOne(query map[string]interface{}) (models.Incident, error) {
 	for _, i := range m.incidents {
 		if i.ComponentRef == query["component_ref"] {
 			return i, nil
@@ -54,8 +54,7 @@ func (m *MockIncidentDAO) FindOne(query map[string]interface{}) (models.Incident
 	}
 	return models.Incident{}, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
-
-func (m *MockIncidentDAO) Update(incident models.Incident) error {
+func (m *incidentDAO) Update(incident models.Incident) error {
 	for k, i := range m.incidents {
 		if i.ComponentRef == incident.ComponentRef {
 			m.incidents[k] = incident
@@ -64,8 +63,7 @@ func (m *MockIncidentDAO) Update(incident models.Incident) error {
 	}
 	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
-
-func (m *MockIncidentDAO) List(start time.Time, end time.Time, unresolved bool) ([]models.Incident, error) {
+func (m *incidentDAO) List(start time.Time, end time.Time, unresolved bool) ([]models.Incident, error) {
 	var inc []models.Incident
 	for _, i := range m.incidents {
 		if (i.Date.Before(end) && i.Date.Before(end)) || (start.IsZero() && end.IsZero()) {
@@ -78,35 +76,32 @@ func (m *MockIncidentDAO) List(start time.Time, end time.Time, unresolved bool) 
 	}
 	return inc, nil
 }
-
-func (m *MockIncidentDAO) Insert(incident models.Incident) error {
+func (m *incidentDAO) Insert(incident models.Incident) error {
 	inc := []models.Incident{incident}
 	m.incidents = append(inc, m.incidents...)
 	return nil
 }
 
-type MockFailureIncidentDAO struct {
+type failureIncidentDAO struct {
 }
 
+// NewMockFailureIncidentDAO creates a new Incident Repository Mock that fails in every operation
 func NewMockFailureIncidentDAO() incident.Repository {
-	return &MockFailureIncidentDAO{}
+	return &failureIncidentDAO{}
 }
 
-func (m *MockFailureIncidentDAO) Find(query map[string]interface{}) ([]models.Incident, error) {
+func (m *failureIncidentDAO) Find(query map[string]interface{}) ([]models.Incident, error) {
 	return []models.Incident{}, fmt.Errorf("Failure DAO")
 }
-
-func (m *MockFailureIncidentDAO) FindOne(query map[string]interface{}) (models.Incident, error) {
+func (m *failureIncidentDAO) FindOne(query map[string]interface{}) (models.Incident, error) {
 	return models.Incident{}, fmt.Errorf("Failure DAO")
 }
-
-func (m *MockFailureIncidentDAO) Update(i models.Incident) error {
+func (m *failureIncidentDAO) Update(i models.Incident) error {
 	return fmt.Errorf("Failure DAO")
 }
-
-func (m *MockFailureIncidentDAO) List(start time.Time, end time.Time, unresolved bool) ([]models.Incident, error) {
+func (m *failureIncidentDAO) List(start time.Time, end time.Time, unresolved bool) ([]models.Incident, error) {
 	return []models.Incident{}, fmt.Errorf("Failure DAO")
 }
-func (m *MockFailureIncidentDAO) Insert(incident models.Incident) error {
+func (m *failureIncidentDAO) Insert(incident models.Incident) error {
 	return fmt.Errorf("Failure DAO")
 }

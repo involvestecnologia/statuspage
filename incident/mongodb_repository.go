@@ -68,7 +68,7 @@ func (r *mongoRepository) List(startDt time.Time, endDt time.Time, unresolved bo
 	}
 
 	if unresolved {
-		findQ = bson.M{"$and": []bson.M{findQ, bson.M{"resolved": false}}}
+		findQ = bson.M{"$and": []bson.M{findQ, {"resolved": false}}}
 	}
 
 	err = r.db.DB(databaseName).C("Incidents").Find(findQ).Sort("-date").All(&incidents)

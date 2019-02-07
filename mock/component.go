@@ -9,12 +9,13 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
-type MockComponentDAO struct {
+type componentDAO struct {
 	components []models.Component
 }
 
+// NewMockComponentDAO  creates a new Component Repository Mock
 func NewMockComponentDAO() component.Repository {
-	return &MockComponentDAO{
+	return &componentDAO{
 		components: []models.Component{
 			{
 				Ref:     ZeroTimeHex,
@@ -50,10 +51,10 @@ func NewMockComponentDAO() component.Repository {
 	}
 }
 
-func (m *MockComponentDAO) List() ([]models.Component, error) {
+func (m *componentDAO) List() ([]models.Component, error) {
 	return m.components, nil
 }
-func (m *MockComponentDAO) Find(q map[string]interface{}) (models.Component, error) {
+func (m *componentDAO) Find(q map[string]interface{}) (models.Component, error) {
 	var c models.Component
 	if keyValue, hasKey := q["ref"]; hasKey {
 		for _, c := range m.components {
@@ -75,14 +76,14 @@ func (m *MockComponentDAO) Find(q map[string]interface{}) (models.Component, err
 
 	return c, &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
-func (m *MockComponentDAO) Insert(component models.Component) (string, error) {
+func (m *componentDAO) Insert(component models.Component) (string, error) {
 	if component.Ref == "" {
 		component.Ref = bson.NewObjectId().Hex()
 	}
 	m.components = append(m.components, component)
 	return component.Ref, nil
 }
-func (m *MockComponentDAO) Update(ref string, component models.Component) error {
+func (m *componentDAO) Update(ref string, component models.Component) error {
 	for k, comp := range m.components {
 		if comp.Ref == ref {
 			m.components[k].Name = component.Name
@@ -92,7 +93,7 @@ func (m *MockComponentDAO) Update(ref string, component models.Component) error 
 	}
 	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
-func (m *MockComponentDAO) Delete(ref string) error {
+func (m *componentDAO) Delete(ref string) error {
 	for k, comp := range m.components {
 		if comp.Ref == ref {
 			m.components = append(m.components[:k], m.components[k+1:]...)
@@ -101,8 +102,7 @@ func (m *MockComponentDAO) Delete(ref string) error {
 	}
 	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
-
-func (m *MockComponentDAO) FindAllWithLabel(label string) ([]models.Component, error) {
+func (m *componentDAO) FindAllWithLabel(label string) ([]models.Component, error) {
 	var comps []models.Component
 	for _, c := range m.components {
 		for _, l := range c.Labels {
@@ -114,8 +114,7 @@ func (m *MockComponentDAO) FindAllWithLabel(label string) ([]models.Component, e
 
 	return comps, nil
 }
-
-func (m *MockComponentDAO) ListAllLabels() (models.ComponentLabels, error) {
+func (m *componentDAO) ListAllLabels() (models.ComponentLabels, error) {
 	cLabels := models.ComponentLabels{
 		Labels: make([]string, 0),
 	}
@@ -131,30 +130,31 @@ func (m *MockComponentDAO) ListAllLabels() (models.ComponentLabels, error) {
 	return cLabels, nil
 }
 
-type MockFailureComponentDAO struct {
+type failureComponentDAO struct {
 }
 
+// NewMockFailureComponentDAO creates a new Component Repository Mock that fails in every operation
 func NewMockFailureComponentDAO() component.Repository {
-	return &MockFailureComponentDAO{}
+	return &failureComponentDAO{}
 }
-func (m *MockFailureComponentDAO) List() ([]models.Component, error) {
+func (m *failureComponentDAO) List() ([]models.Component, error) {
 	return []models.Component{}, fmt.Errorf("DAO Failure")
 }
-func (m *MockFailureComponentDAO) ListAllLabels() (models.ComponentLabels, error) {
+func (m *failureComponentDAO) ListAllLabels() (models.ComponentLabels, error) {
 	return models.ComponentLabels{}, fmt.Errorf("DAO Failure")
 }
-func (m *MockFailureComponentDAO) Find(q map[string]interface{}) (models.Component, error) {
+func (m *failureComponentDAO) Find(q map[string]interface{}) (models.Component, error) {
 	return models.Component{}, fmt.Errorf("DAO Failure")
 }
-func (m *MockFailureComponentDAO) FindAllWithLabel(label string) ([]models.Component, error) {
+func (m *failureComponentDAO) FindAllWithLabel(label string) ([]models.Component, error) {
 	return []models.Component{}, fmt.Errorf("DAO Failure")
 }
-func (m *MockFailureComponentDAO) Insert(component models.Component) (string, error) {
+func (m *failureComponentDAO) Insert(component models.Component) (string, error) {
 	return "", fmt.Errorf("DAO Failure")
 }
-func (m *MockFailureComponentDAO) Update(ref string, component models.Component) error {
+func (m *failureComponentDAO) Update(ref string, component models.Component) error {
 	return fmt.Errorf("DAO Failure")
 }
-func (m *MockFailureComponentDAO) Delete(ref string) error {
+func (m *failureComponentDAO) Delete(ref string) error {
 	return fmt.Errorf("DAO Failure")
 }

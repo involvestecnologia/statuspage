@@ -16,8 +16,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const routerGroupName = "/test"
-const failureRouterGroupName = "/failure"
+const (
+	routerGroupName        = "/test"
+	failureRouterGroupName = "/failure"
+)
 
 var router = gin.Default()
 var compSvc = component.NewService(mock.NewMockComponentDAO())

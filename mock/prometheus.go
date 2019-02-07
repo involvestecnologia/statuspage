@@ -6,6 +6,8 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 )
 
+//PrometheusModel return a map of PrometheusIncomingWebhook structures
+// to be used in tests named by it's the test case model
 func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 	return map[string]models.PrometheusIncomingWebhook{
 		"ModelComplete": {
@@ -76,9 +78,9 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 				},
 			},
 		},
-		"ModelComponentNameAlreadyExists": models.PrometheusIncomingWebhook{
+		"ModelComponentNameAlreadyExists": {
 			Alerts: []models.PrometheusAlerts{
-				models.PrometheusAlerts{
+				{
 					Status: "RESOLVED",
 					Component: models.Component{
 						Ref:     "ZeroTimeHex",
@@ -91,9 +93,9 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 				},
 			},
 		},
-		"ModelComponentRefAlreadyExists": models.PrometheusIncomingWebhook{
+		"ModelComponentRefAlreadyExists": {
 			Alerts: []models.PrometheusAlerts{
-				models.PrometheusAlerts{
+				{
 					Status: "RESOLVED",
 					Component: models.Component{
 						Ref:     ZeroTimeHex,
@@ -126,6 +128,6 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 				},
 			},
 		},
-		"ModelBlank": models.PrometheusIncomingWebhook{},
+		"ModelBlank": {},
 	}
 }

@@ -92,10 +92,10 @@ func TestIncidentMongoDB_Repository_FindOne(t *testing.T) {
 		assert.Equal(t, i, inc)
 	}
 
-	inc, err = repo.FindOne(map[string]interface{}{"component_ref": "Invalid Ref"})
+	_, err = repo.FindOne(map[string]interface{}{"component_ref": "Invalid Ref"})
 	assert.NotNil(t, err)
 
-	inc, err = repo.FindOne(map[string]interface{}{"invalidQuery": "SomeValue"})
+	_, err = repo.FindOne(map[string]interface{}{"invalidQuery": "SomeValue"})
 	assert.NotNil(t, err)
 
 	repo = incident.NewMongoRepository(failureSession)

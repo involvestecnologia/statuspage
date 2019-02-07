@@ -103,11 +103,11 @@ func (s *componentService) ListComponentsWithLabels(cLabels models.ComponentLabe
 		comps, err := s.repo.FindAllWithLabel(label)
 		if err != nil {
 			return nil, err
-		} else {
-			for _, c := range comps {
-				components = append(components, c)
-			}
 		}
+		for _, c := range comps {
+			components = append(components, c)
+		}
+
 	}
 	return components, nil
 }
