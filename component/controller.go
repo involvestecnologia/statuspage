@@ -120,3 +120,31 @@ func (ctrl *Controller) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusNoContent, "")
 }
+
+//ListExistentLabels it's the handler function that lists all existent labels
+func (ctrl *Controller) ListExistentLabels(c *gin.Context) {
+	labels, err := ctrl.service.ListAllLabels()
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(http.StatusOK, labels)
+}
+
+//FindWithLabelFilter it's the handler function for Component retrieve filtered by labels
+func (ctrl *Controller) FindWithLabelFilter(c *gin.Context) {
+	var labels models.ComponentLabels
+	if err := c.ShouldBindJSON(&labels); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	components, err := ctrl.service.ListComponentsWithLabels(labels)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+
+	}
+	c.JSON(http.StatusOK, components)
+
+}

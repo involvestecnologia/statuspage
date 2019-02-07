@@ -75,6 +75,7 @@ func TestComponentService_CreateComponent(t *testing.T) {
 		Ref:     bson.NewObjectIdWithTime(bson.Now().Add(5 * time.Second)).Hex(),
 		Name:    "New Component",
 		Address: "no-address",
+		Labels:  []string{"test", "test2"},
 	}
 
 	ref, err := s.CreateComponent(c)
@@ -145,4 +146,46 @@ func TestComponentService_componentExists(t *testing.T) {
 
 	_, exists = s.ComponentExists(map[string]interface{}{"name": bson.NewObjectIdWithTime(bson.Now()).String()})
 	assert.False(t, exists)
+}
+
+func TestComponentService_ListAllLabels(t *testing.T) {
+	s := component.NewService(mock.NewMockComponentDAO())
+
+	c := models.Component{
+		Ref:     bson.NewObjectIdWithTime(bson.Now().Add(5 * time.Second)).Hex(),
+		Name:    "New Component",
+		Address: "no-address",
+		Labels:  []string{"test", "test2"},
+	}
+	_, err := s.CreateComponent(c)
+	assert.Nil(t, err)
+
+	cLabels, err := s.ListAllLabels()
+	assert.Nil(t, err)
+	if assert.NotNil(t, cLabels) {
+		assert.NotEmpty(t, cLabels.Labels)
+	}
+
+}
+func TestComponentService_ListComponentsWithLabels(t *testing.T) {
+	s := component.NewService(mock.NewMockComponentDAO())
+
+	c := models.Component{
+		Name:    "New Component",
+		Address: "no-address",
+		Labels:  []string{"test", "test2"},
+	}
+	_, err := s.CreateComponent(c)
+	assert.Nil(t, err)
+
+	cLabels, err := s.ListAllLabels()
+	assert.Nil(t, err)
+	if assert.NotNil(t, cLabels) {
+		assert.NotEmpty(t, cLabels.Labels)
+	}
+
+	comps, err := s.ListComponentsWithLabels(cLabels)
+	if assert.Nil(t, err) && assert.NotNil(t, comps) {
+		assert.IsType(t, []models.Component{}, comps)
+	}
 }

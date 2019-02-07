@@ -93,3 +93,21 @@ func (s *componentService) isComponentRefInUse(c models.Component) (bool, error)
 	}
 	return false, nil
 }
+
+func (s *componentService) ListAllLabels() (models.ComponentLabels, error) {
+	return s.repo.ListAllLabels()
+}
+func (s *componentService) ListComponentsWithLabels(cLabels models.ComponentLabels) ([]models.Component, error) {
+	var components []models.Component
+	for _, label := range cLabels.Labels {
+		comps, err := s.repo.FindAllWithLabel(label)
+		if err != nil {
+			return nil, err
+		} else {
+			for _, c := range comps {
+				components = append(components, c)
+			}
+		}
+	}
+	return components, nil
+}

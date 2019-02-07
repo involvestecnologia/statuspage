@@ -15,10 +15,12 @@ func Router(componentService Service, router *gin.RouterGroup) {
 		componentRouter.PATCH("/:ref", componentController.Update)
 		componentRouter.GET("/:ref", componentController.Find)
 		componentRouter.DELETE("/:ref", componentController.Delete)
+		componentRouter.POST("/label", componentController.FindWithLabelFilter)
 	}
 
 	componentsRouter := router.Group("/components")
 	{
 		componentsRouter.POST("", componentController.List)
+		componentsRouter.GET("/labels", componentController.ListExistentLabels)
 	}
 }

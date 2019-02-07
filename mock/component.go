@@ -102,18 +102,52 @@ func (m *MockComponentDAO) Delete(ref string) error {
 	return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 }
 
+func (m *MockComponentDAO) FindAllWithLabel(label string) ([]models.Component, error) {
+	var comps []models.Component
+	for _, c := range m.components {
+		for _, l := range c.Labels {
+			if l == label {
+				comps = append(comps, c)
+			}
+		}
+	}
+
+	return comps, nil
+}
+
+func (m *MockComponentDAO) ListAllLabels() (models.ComponentLabels, error) {
+	cLabels := models.ComponentLabels{
+		Labels: make([]string, 0),
+	}
+	labelExist := make(map[string]bool, 0)
+	for _, c := range m.components {
+		for _, l := range c.Labels {
+			if !labelExist[l] {
+				labelExist[l] = true
+				cLabels.Labels = append(cLabels.Labels, l)
+			}
+		}
+	}
+	return cLabels, nil
+}
+
 type MockFailureComponentDAO struct {
 }
 
 func NewMockFailureComponentDAO() component.Repository {
 	return &MockFailureComponentDAO{}
 }
-
 func (m *MockFailureComponentDAO) List() ([]models.Component, error) {
 	return []models.Component{}, fmt.Errorf("DAO Failure")
 }
+func (m *MockFailureComponentDAO) ListAllLabels() (models.ComponentLabels, error) {
+	return models.ComponentLabels{}, fmt.Errorf("DAO Failure")
+}
 func (m *MockFailureComponentDAO) Find(q map[string]interface{}) (models.Component, error) {
 	return models.Component{}, fmt.Errorf("DAO Failure")
+}
+func (m *MockFailureComponentDAO) FindAllWithLabel(label string) ([]models.Component, error) {
+	return []models.Component{}, fmt.Errorf("DAO Failure")
 }
 func (m *MockFailureComponentDAO) Insert(component models.Component) (string, error) {
 	return "", fmt.Errorf("DAO Failure")

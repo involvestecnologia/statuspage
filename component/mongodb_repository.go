@@ -49,6 +49,7 @@ func (r *mongoRepository) Update(ref string, comp models.Component) (err error) 
 	change := bson.M{"$set": bson.M{
 		"name":    comp.Name,
 		"address": comp.Address,
+		"labels":  comp.Labels,
 	}}
 	err = r.db.DB(databaseName).C("Component").Update(compQ, change)
 	if err == mgo.ErrNotFound {
@@ -65,6 +66,28 @@ func (r *mongoRepository) Delete(ref string) (err error) {
 		return &errors.ErrNotFound{Message: errors.ErrNotFoundMessage}
 	}
 	return err
+}
+
+func (r *mongoRepository) FindAllWithLabel(label string) (comps []models.Component, err error) {
+	defer mongoFailure(&err)
+	query := map[string]interface{}{
+		"labels": map[string]interface{}{
+			"$elemMatch": map[string]interface{}{
+				"$eq": label,
+			},
+		},
+	}
+	err = r.db.DB(databaseName).C("Component").Find(query).All(&comps)
+	return comps, err
+}
+
+func (r *mongoRepository) ListAllLabels() (cLabels models.ComponentLabels, err error) {
+	defer mongoFailure(&err)
+	unwind := bson.M{"$unwind": "$labels"}
+	group := bson.M{"$group": bson.M{"_id": nil, "labels": bson.M{"$addToSet": "$labels"}}}
+	pipeline := []bson.M{unwind, group}
+	err = r.db.DB(databaseName).C("Component").Pipe(pipeline).One(&cLabels)
+	return cLabels, err
 }
 
 func mongoFailure(e *error) {

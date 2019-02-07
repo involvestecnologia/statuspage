@@ -14,3 +14,4 @@ services:
       - 8080:8080
     environment:
       - MONGO_URI=mongo
+      - GIN_MODE=debug

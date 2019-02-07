@@ -7,7 +7,9 @@ import (
 // Read implements the read action methods
 type Read interface {
 	Find(queryParam map[string]interface{}) (models.Component, error)
+	FindAllWithLabel(label string) ([]models.Component, error)
 	List() ([]models.Component, error)
+	ListAllLabels() (models.ComponentLabels, error)
 }
 
 // Write implements the write action methods
@@ -31,4 +33,6 @@ type Service interface {
 	ListComponents(refs []string) ([]models.Component, error)
 	RemoveComponent(componentRef string) error
 	UpdateComponent(componentRef string, component models.Component) error
+	ListAllLabels() (models.ComponentLabels, error)
+	ListComponentsWithLabels(labels models.ComponentLabels) ([]models.Component, error)
 }

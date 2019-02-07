@@ -15,8 +15,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const routerGroupName = "/test"
-const failureRouterGroupName = "/failure"
+const (
+	routerGroupName        = "/test"
+	failureRouterGroupName = "/failure"
+)
 
 var router = gin.Default()
 
@@ -40,7 +42,7 @@ func performRequest(t *testing.T, r http.Handler, method, path string, body []by
 
 func TestController_Create(t *testing.T) {
 	//Valid: new component body
-	body := []byte(`{"name": "test component","address": "t.e.s.t", "incidents_history": []}`)
+	body := []byte(`{"name": "test component","address": "t.e.s.t","labels": ["test","test2"], "incidents_history": []}`)
 	resp := performRequest(t, router, "POST", routerGroupName+"/component", body)
 
 	assert.Equal(t, http.StatusCreated, resp.Code)
@@ -77,7 +79,7 @@ func TestController_Create(t *testing.T) {
 
 func TestController_Update(t *testing.T) {
 	//Valid: component with exitent ref
-	body := []byte(`{"name": "test1","resources": []}`)
+	body := []byte(`{"name": "test1","labels": ["test"],"resources": []}`)
 	resp := performRequest(t, router, "PATCH", routerGroupName+"/component/886e09000000000000000000", body)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
@@ -185,5 +187,54 @@ func TestController_List(t *testing.T) {
 	//Failure
 	resp = performRequest(t, router, "POST", failureRouterGroupName+"/components", nil)
 
+	assert.Equal(t, http.StatusInternalServerError, resp.Code)
+}
+
+func TestController_ListExistentLabels(t *testing.T) {
+	resp := performRequest(t, router, "GET", routerGroupName+"/components/labels", nil)
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+	var data models.ComponentLabels
+	err := json.Unmarshal([]byte(resp.Body.String()), &data)
+	assert.Nil(t, err)
+	if assert.NotNil(t, data) {
+		assert.NotEmpty(t, data.Labels)
+	}
+
+	resp = performRequest(t, router, "GET", failureRouterGroupName+"/components/labels", nil)
+	assert.Equal(t, http.StatusInternalServerError, resp.Code)
+
+}
+func TestController_FindWithLabelFilter(t *testing.T) {
+	resp := performRequest(t, router, "GET", routerGroupName+"/components/labels", nil)
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+	var cLabels models.ComponentLabels
+	err := json.Unmarshal([]byte(resp.Body.String()), &cLabels)
+	assert.Nil(t, err)
+	if assert.NotNil(t, cLabels) {
+		assert.NotEmpty(t, cLabels.Labels)
+	}
+
+	body := []byte(`{"labels": ["` + cLabels.Labels[0] + `"]}`)
+
+	resp = performRequest(t, router, "POST", routerGroupName+"/component/label", body)
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+	var comps []models.Component
+	err = json.Unmarshal([]byte(resp.Body.String()), &comps)
+	assert.Nil(t, err)
+	if assert.NotNil(t, comps) {
+		assert.NotEmpty(t, comps)
+	}
+
+	body = []byte(`{"invalidObj": ["` + cLabels.Labels[0] + `"]}`)
+
+	resp = performRequest(t, router, "POST", routerGroupName+"/component/label", body)
+	assert.Equal(t, http.StatusBadRequest, resp.Code)
+
+	body = []byte(`{"labels": ["` + cLabels.Labels[0] + `"]}`)
+
+	resp = performRequest(t, router, "POST", failureRouterGroupName+"/component/label", body)
 	assert.Equal(t, http.StatusInternalServerError, resp.Code)
 }

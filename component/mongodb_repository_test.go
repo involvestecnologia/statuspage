@@ -18,6 +18,7 @@ var failureSession *mgo.Session
 var c = models.Component{
 	Ref:     "",
 	Name:    "Test Component",
+	Labels:  []string{"test", "test2"},
 	Address: "",
 }
 
@@ -139,5 +140,42 @@ func TestComponentMongoDB_Repository_List(t *testing.T) {
 
 	repo = component.NewMongoRepository(failureSession)
 	_, err = repo.List()
+	assert.NotNil(t, err)
+}
+
+func TestComponentMongoDB_Repository_ListAllLabels(t *testing.T) {
+	repo := component.NewMongoRepository(testSession)
+
+	cLabels, err := repo.ListAllLabels()
+	assert.Nil(t, err)
+	assert.NotNil(t, cLabels)
+
+	repo = component.NewMongoRepository(failureSession)
+	_, err = repo.ListAllLabels()
+	assert.NotNil(t, err)
+
+}
+
+func TestComponentMongoDB_Repository_FindAll(t *testing.T) {
+	repo := component.NewMongoRepository(testSession)
+
+	cLabels, _ := repo.ListAllLabels()
+	comps, err := repo.FindAllWithLabel(cLabels.Labels[0])
+	if assert.Nil(t, err) && assert.NotNil(t, comps) {
+		list := []models.Component{c}
+		assert.IsType(t, list, comps)
+		exists := func(str string, strs []string) bool {
+			for _, s := range strs {
+				if s == str {
+					return true
+				}
+			}
+			return false
+		}(cLabels.Labels[0], comps[0].Labels)
+		assert.True(t, exists)
+	}
+
+	repo = component.NewMongoRepository(failureSession)
+	_, err = repo.FindAllWithLabel(cLabels.Labels[0])
 	assert.NotNil(t, err)
 }
