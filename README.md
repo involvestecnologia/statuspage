@@ -7,6 +7,7 @@ This is a generic Status Page. It's sole purpose it's to display the latest inci
 ### Features:
  - Group component to represent a client resources
  - Prometheus incoming webhook
+ - Categorize components with labels
  - [WIP] Incoming/Outgoing Webhooks
 
 ### Docs:
