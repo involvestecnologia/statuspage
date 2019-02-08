@@ -1,6 +1,8 @@
 package prometheus
 
 import (
+	"time"
+
 	"github.com/involvestecnologia/statuspage/component"
 	"github.com/involvestecnologia/statuspage/errors"
 	"github.com/involvestecnologia/statuspage/incident"
@@ -24,7 +26,7 @@ func (svc *prometheusService) ProcessIncomingWebhook(incoming models.PrometheusI
 			return err
 		}
 		alerts.Incident.ComponentRef = ref
-
+		alerts.Incident.Date = time.Now()
 		if err := svc.incident.CreateIncidents(alerts.Incident); err != nil {
 			if svc.shouldFail(err) {
 				return err
