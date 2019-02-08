@@ -11,4 +11,4 @@ This is a generic Status Page. It's sole purpose it's to display the latest inci
  - [WIP] Incoming/Outgoing Webhooks
 
 ### Docs:
- The API documentation is available in [statuspage-api-reference](https://involvestecnologia.github.io/statuspage-api-reference) [[view-source-code](https://github.com/involvestecnologia/statuspage-api-reference)].
+ The API documentation is available in [StatusPage API Reference](https://involvestecnologia.github.io/statuspage-api-reference) <sub><sup>[[view-source-code](https://github.com/involvestecnologia/statuspage-api-reference)]</sup></sub>
