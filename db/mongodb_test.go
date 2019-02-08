@@ -1,13 +1,13 @@
 package db
 
 import (
+	"os"
 	"testing"
 
 	mgo "github.com/globalsign/mgo"
 	"github.com/stretchr/testify/assert"
 )
 
-const validMongoArgs = "localhost"
 const invalidMongoArgs = "invalid"
 
 func TestDB_InitMongo(t *testing.T) {
@@ -17,6 +17,8 @@ func TestDB_InitMongo(t *testing.T) {
 		InitMongo(invalidMongoArgs)
 	}
 	assert.Panics(t, f)
+
+	validMongoArgs := os.Getenv("MONGO_URI")
 
 	f = func() {
 		InitMongo(validMongoArgs)

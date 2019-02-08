@@ -2,6 +2,7 @@ package incident_test
 
 import (
 	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -12,8 +13,6 @@ import (
 	"github.com/involvestecnologia/statuspage/models"
 	"github.com/stretchr/testify/assert"
 )
-
-const validMongoArgs = "localhost"
 
 var testSession *mgo.Session
 var failureSession *mgo.Session
@@ -30,7 +29,7 @@ var c = models.Component{
 }
 
 func init() {
-	testSession = db.InitMongo(validMongoArgs)
+	testSession = db.InitMongo(os.Getenv("MONGO_URI"))
 	err := testSession.DB("status").DropDatabase()
 	if err != nil {
 		log.Panicf("%s\n", err)
