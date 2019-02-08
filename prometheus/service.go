@@ -26,7 +26,9 @@ func (svc *prometheusService) ProcessIncomingWebhook(incoming models.PrometheusI
 			return err
 		}
 		alerts.Incident.ComponentRef = ref
-		alerts.Incident.Date = time.Now()
+		if alerts.Incident.Date.IsZero() {
+			alerts.Incident.Date = time.Now()
+		}
 		if err := svc.incident.CreateIncidents(alerts.Incident); err != nil {
 			if svc.shouldFail(err) {
 				return err
