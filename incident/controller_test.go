@@ -122,8 +122,12 @@ func TestController_List(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 
-	// Valid: query parameters month and year
-	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?year=2019&month=1", nil)
+	end := time.Now().Format(time.RFC3339)
+	assert.Nil(t, err)
+	start := time.Now().Add(-12 * time.Hour).Format(time.RFC3339)
+	assert.Nil(t, err)
+	// Valid: query parameters endDate startDate
+	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?startDate="+start+"&endDate="+end, nil)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
 
@@ -131,8 +135,8 @@ func TestController_List(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 
-	// Valid: query parameters only year
-	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?year=2019", nil)
+	// Valid: query parameters only start
+	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?startDate="+start, nil)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
 
@@ -140,8 +144,8 @@ func TestController_List(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 
-	// Valid: query parameters only month
-	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?month=1", nil)
+	// Valid: query parameters only end
+	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?endDate="+end, nil)
 
 	assert.Equal(t, http.StatusOK, resp.Code)
 
@@ -154,13 +158,22 @@ func TestController_List(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, resp.Code)
 
-	// Invalid: query parameters year
-	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?year=0", nil)
+	start = time.Now().Add(1 * time.Hour).Format(time.RFC3339)
+	// Invalid: query parameters start
+	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?startDate="+start, nil)
 
 	assert.Equal(t, http.StatusBadRequest, resp.Code)
 
-	// Invalid: query parameters month
-	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?month=0", nil)
+	end = time.Now().Add(1 * time.Hour).Format(time.RFC3339)
+	// Invalid: query parameters end
+	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?endDate="+end, nil)
+
+	assert.Equal(t, http.StatusBadRequest, resp.Code)
+
+	start = time.Now().Add(-2 * time.Hour).Format(time.RFC3339)
+	end = time.Now().Add(-3 * time.Hour).Format(time.RFC3339)
+	// Invalid: query parameters start and end
+	resp = performRequest(t, router, "GET", routerGroupName+"/incidents?startDate="+start+"&endDate="+end, nil)
 
 	assert.Equal(t, http.StatusBadRequest, resp.Code)
 

@@ -16,11 +16,12 @@ import (
 
 var testSession *mgo.Session
 var failureSession *mgo.Session
+var dt, _ = time.Parse(time.RFC3339, time.Date(2018, time.March, 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339))
 var i = models.Incident{
 	ComponentRef: mock.ZeroTimeHex,
 	Status:       models.IncidentStatusOutage,
 	Description:  "",
-	Date:         time.Date(2019, time.January, 1, 0, 0, 0, 0, time.UTC),
+	Date:         dt,
 }
 var c = models.Component{
 	Ref:     mock.ZeroTimeHex,
@@ -106,8 +107,10 @@ func TestIncidentMongoDB_Repository_FindOne(t *testing.T) {
 func TestIncidentMongoDB_Repository_List(t *testing.T) {
 	repo := incident.NewMongoRepository(testSession)
 
-	startDt := time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC)
-	endDt := time.Date(2019, time.January, 1, 0, 0, 0, 0, time.UTC)
+	startDt, err := time.Parse(time.RFC3339, time.Date(2018, time.January, 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339))
+	assert.Nil(t, err)
+	endDt, err := time.Parse(time.RFC3339, time.Date(2019, time.January, 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339))
+	assert.Nil(t, err)
 	unresolved := false
 
 	incidents, err := repo.List(startDt, endDt, unresolved)
@@ -122,13 +125,15 @@ func TestIncidentMongoDB_Repository_List(t *testing.T) {
 		}
 	}
 
-	endDt = time.Date(2018, time.January, 2, 0, 0, 0, 0, time.UTC)
+	endDt, err = time.Parse(time.RFC3339, time.Date(2018, time.January, 2, 0, 0, 0, 0, time.UTC).Format(time.RFC3339))
+	assert.Nil(t, err)
 	incidents, err = repo.List(startDt, endDt, unresolved)
 	if assert.Nil(t, err) && assert.Nil(t, incidents) {
 		assert.IsType(t, []models.Incident{}, incidents)
 	}
 
-	endDt = time.Date(2019, time.January, 1, 0, 0, 0, 0, time.UTC)
+	endDt, err = time.Parse(time.RFC3339, time.Date(2019, time.January, 1, 0, 0, 0, 0, time.UTC).Format(time.RFC3339))
+	assert.Nil(t, err)
 	repo = incident.NewMongoRepository(failureSession)
 	_, err = repo.List(startDt, endDt, unresolved)
 	assert.NotNil(t, err)

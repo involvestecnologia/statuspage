@@ -26,7 +26,13 @@ func TestIncidentService_ListIncidents(t *testing.T) {
 		component.NewService(mock.NewMockComponentDAO()),
 	)
 
-	i, err := s.ListIncidents("", "", false)
+	params := models.ListIncidentQueryParameters{
+		EndDate:    "",
+		StartDate:  "",
+		Unresolved: true,
+	}
+
+	i, err := s.ListIncidents(params)
 	if assert.Nil(t, err) && assert.NotNil(t, i) {
 		if assert.IsType(t, []models.Incident{}, i) {
 			assert.Equal(t, mock.ZeroTimeHex, i[0].ComponentRef)
@@ -34,7 +40,7 @@ func TestIncidentService_ListIncidents(t *testing.T) {
 		}
 	}
 
-	incs, err := s.ListIncidents("", "", true)
+	incs, err := s.ListIncidents(params)
 	if assert.Nil(t, err) && assert.NotNil(t, i) {
 		if assert.IsType(t, []models.Incident{}, i) {
 			for _, inc := range incs {
@@ -43,41 +49,36 @@ func TestIncidentService_ListIncidents(t *testing.T) {
 		}
 	}
 
-	// Valid Month
-	monthOnly, err := s.ListIncidents("", "1", false)
+	params.StartDate = time.Now().Add(-24 * time.Hour).Format(time.RFC3339)
+	params.Unresolved = false
+	// Valid StartDate
+	monthOnly, err := s.ListIncidents(params)
 	if assert.Nil(t, err) && assert.NotNil(t, monthOnly) {
 		assert.Equal(t, 1, int(monthOnly[0].Date.Month()))
 	}
-	// Valid Year
-	yearOnly, err := s.ListIncidents("1", "", false)
+
+	params.EndDate = time.Now().Add(-12 * time.Hour).Format(time.RFC3339)
+	// Valid EndDate
+	yearOnly, err := s.ListIncidents(params)
 	if assert.Nil(t, err) && assert.NotNil(t, yearOnly) {
 		assert.Equal(t, 1, yearOnly[0].Date.Year())
 	}
 
-	// Invalid Year
-	_, err = s.ListIncidents("0", "1", false)
+	params.StartDate = time.Now().Add(24 * time.Hour).Format(time.RFC3339)
+	// Invalid StartDate
+	_, err = s.ListIncidents(params)
 	assert.NotNil(t, err)
 
-	// Invalid Month
-	_, err = s.ListIncidents("1", "0", false)
+	params.EndDate = time.Now().Add(24 * time.Hour).Format(time.RFC3339)
+	// Invalid EndDate
+	_, err = s.ListIncidents(params)
 	assert.NotNil(t, err)
 
-	// Invalid Month
-	_, err = s.ListIncidents("", "13", false)
+	params.StartDate = time.Now().Add(-24 * time.Hour).Format(time.RFC3339)
+	params.EndDate = time.Now().Add(-36 * time.Hour).Format(time.RFC3339)
+	// Invalid EndDate
+	_, err = s.ListIncidents(params)
 	assert.NotNil(t, err)
-
-	// Invalid Month
-	_, err = s.ListIncidents("", "test", false)
-	assert.NotNil(t, err)
-
-	// Invalid Year
-	_, err = s.ListIncidents("test", "", false)
-	assert.NotNil(t, err)
-
-	// Invalid Year
-	_, err = s.ListIncidents("-1", "", false)
-	assert.NotNil(t, err)
-
 }
 func TestIncidentService_CreateIncident(t *testing.T) {
 	s := incident.NewService(
@@ -151,15 +152,28 @@ func TestIncidentService_ValidateMonth(t *testing.T) {
 		component.NewService(mock.NewMockComponentDAO()),
 	)
 
-	_, err := s.ValidateMonth("1")
+	start := time.Time{}
+	end := time.Now()
+	err := s.ValidateDate(start, end)
 	assert.Nil(t, err)
 
-	_, err = s.ValidateMonth("0")
+	end, err = time.Parse(time.RFC3339, end.Add(24*time.Hour).Format(time.RFC3339))
+	assert.Nil(t, err)
+	err = s.ValidateDate(start, end)
 	assert.NotNil(t, err)
 
-	_, err = s.ValidateMonth("13")
+	end, err = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	assert.Nil(t, err)
+	start, err = time.Parse(time.RFC3339, end.Add(2*time.Hour).Format(time.RFC3339))
+	assert.Nil(t, err)
+	err = s.ValidateDate(start, end)
 	assert.NotNil(t, err)
 
-	_, err = s.ValidateMonth("test")
+	end, err = time.Parse(time.RFC3339, time.Now().Add(-6*time.Hour).Format(time.RFC3339))
+	assert.Nil(t, err)
+	start, err = time.Parse(time.RFC3339, end.Add(2*time.Hour).Format(time.RFC3339))
+	assert.Nil(t, err)
+	err = s.ValidateDate(start, end)
 	assert.NotNil(t, err)
+
 }
