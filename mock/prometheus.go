@@ -53,6 +53,29 @@ func PrometheusModel() map[string]models.PrometheusIncomingWebhook {
 				},
 			},
 		},
+		"ModelUnstable": {
+			Alerts: []models.PrometheusAlerts{
+				{
+					Status: "firing",
+					PrometheusLabel: models.PrometheusLabel{
+						ComponentRef: "123123",
+						Description:  "status unstable",
+						Status:       "2",
+					},
+					Component: models.Component{
+						Ref:  "123123",
+						Name: "CompleteModel",
+						Labels: []string{
+							"Firing",
+						},
+						Address: "",
+					},
+					StartsAt:     time.Now(),
+					EndsAt:       time.Now(),
+					GeneratorURL: "ur.com",
+				},
+			},
+		},
 		"ModelResolved": {
 			Alerts: []models.PrometheusAlerts{
 				{

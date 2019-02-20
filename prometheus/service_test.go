@@ -37,13 +37,17 @@ func TestPrometheusService_Service(t *testing.T) {
 
 func TestPrometheusService_ProcessIncomingWebhookReturnNil(t *testing.T) {
 	newPrometheusMock := mock.PrometheusModel()
-	err := NewServicesMock(false, "").ProcessIncomingWebhook(newPrometheusMock["ModelComplete"])
+	prometheusServiceMock := NewServicesMock(false, "")
+	err := prometheusServiceMock.ProcessIncomingWebhook(newPrometheusMock["ModelComplete"])
 	assert.Nil(t, err)
 
-	err = NewServicesMock(false, "").ProcessIncomingWebhook(newPrometheusMock["ModelFiring"])
+	err = prometheusServiceMock.ProcessIncomingWebhook(newPrometheusMock["ModelFiring"])
 	assert.Nil(t, err)
 
-	err = NewServicesMock(false, "").ProcessIncomingWebhook(newPrometheusMock["ModelResolved"])
+	err = prometheusServiceMock.ProcessIncomingWebhook(newPrometheusMock["ModelUnstable"])
+	assert.Nil(t, err)
+
+	err = prometheusServiceMock.ProcessIncomingWebhook(newPrometheusMock["ModelResolved"])
 	assert.Nil(t, err)
 }
 
@@ -52,6 +56,9 @@ func TestPrometheusService_ProcessIncomingWebhookReturnIncidentErr(t *testing.T)
 
 	err := NewServicesMock(false, "incident").ProcessIncomingWebhook(newPrometheusMock["ModelCompleteWithBadStatus"])
 	assert.Nil(t, err)
+
+	err = NewServicesMock(true, "incident").ProcessIncomingWebhook(newPrometheusMock["ModelResolved"])
+	assert.NotNil(t, err)
 
 	err = NewServicesMock(true, "incident").ProcessIncomingWebhook(newPrometheusMock["ModelWithoutName"])
 	assert.NotNil(t, err)

@@ -17,9 +17,10 @@ type PrometheusAlerts struct {
 	GeneratorURL    string          `json:"generatorURL,omitempty"`
 }
 
+//PrometheusLabel is a structure created to be carried in the PrometheusAlerts with the Incident information
 type PrometheusLabel struct {
 	Status       string    `json:"status" binding:"required"`
-	Description	 string		`json:"description"`
+	Description  string    `json:"description"`
 	Date         time.Time `json:"occurrence_date" binding:"required"`
-	ComponentRef string    `json:"component_ref" bson:"component_ref" binding:"required"`
+	ComponentRef string    `json:"component_ref" binding:"required"`
 }

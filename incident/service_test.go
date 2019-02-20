@@ -79,6 +79,17 @@ func TestIncidentService_ListIncidents(t *testing.T) {
 	// Invalid EndDate
 	_, err = s.ListIncidents(params)
 	assert.NotNil(t, err)
+
+	params.StartDate = time.Now().Add(-24 * time.Hour).Format(time.RFC1123)
+	// Invalid StartDate format
+	_, err = s.ListIncidents(params)
+	assert.NotNil(t, err)
+
+	params.StartDate = time.Now().Add(-24 * time.Hour).Format(time.RFC3339)
+	params.EndDate = time.Now().Add(-12 * time.Hour).Format(time.RFC1123)
+	// Invalid EndDate format
+	_, err = s.ListIncidents(params)
+	assert.NotNil(t, err)
 }
 func TestIncidentService_CreateIncident(t *testing.T) {
 	s := incident.NewService(

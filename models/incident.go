@@ -14,6 +14,7 @@ type Incident struct {
 	ComponentRef string        `json:"component_ref" bson:"component_ref" binding:"required"`
 }
 
+// ListIncidentQueryParameters is a convenience structure that bags the query parameters of ListIncidentEndpoint
 type ListIncidentQueryParameters struct {
 	StartDate  string
 	EndDate    string

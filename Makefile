@@ -1,6 +1,9 @@
 dep-vendor:
 	docker run -it --rm --name go-dep-vendor -e GO111MODULE=on -v `pwd`:/tmp/statuspage -w="/tmp/statuspage" golang go mod vendor
 
+gofmt: 
+	for i in `find ./* -not -path "./vendor*" -name '*.go'`; do gofmt -s $$i | sponge $$i ; done
+
 test-all:
 	docker-compose down
 	docker-compose up -d mongo
