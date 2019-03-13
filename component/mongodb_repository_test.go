@@ -34,6 +34,19 @@ func TestComponentMongoDB_Repository_NewMongoRepository(t *testing.T) {
 	assert.Implements(t, (*component.Repository)(nil), repo)
 }
 
+func TestComponentMongoDB_Repository_ListAllLabels(t *testing.T) {
+	repo := component.NewMongoRepository(testSession)
+
+	cLabels, err := repo.ListAllLabels()
+	assert.Nil(t, err)
+	assert.NotNil(t, cLabels)
+
+	repo = component.NewMongoRepository(failureSession)
+	_, err = repo.ListAllLabels()
+	assert.NotNil(t, err)
+
+}
+
 func TestComponentMongoDB_Repository_Insert(t *testing.T) {
 
 	repo := component.NewMongoRepository(testSession)
@@ -140,19 +153,6 @@ func TestComponentMongoDB_Repository_List(t *testing.T) {
 	repo = component.NewMongoRepository(failureSession)
 	_, err = repo.List()
 	assert.NotNil(t, err)
-}
-
-func TestComponentMongoDB_Repository_ListAllLabels(t *testing.T) {
-	repo := component.NewMongoRepository(testSession)
-
-	cLabels, err := repo.ListAllLabels()
-	assert.Nil(t, err)
-	assert.NotNil(t, cLabels)
-
-	repo = component.NewMongoRepository(failureSession)
-	_, err = repo.ListAllLabels()
-	assert.NotNil(t, err)
-
 }
 
 func TestComponentMongoDB_Repository_FindAll(t *testing.T) {

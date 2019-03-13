@@ -87,6 +87,9 @@ func (r *mongoRepository) ListAllLabels() (cLabels models.ComponentLabels, err e
 	group := bson.M{"$group": bson.M{"_id": nil, "labels": bson.M{"$addToSet": "$labels"}}}
 	pipeline := []bson.M{unwind, group}
 	err = r.db.DB(databaseName).C("Component").Pipe(pipeline).One(&cLabels)
+	if err == mgo.ErrNotFound {
+		return cLabels, nil
+	}
 	return cLabels, err
 }
 
