@@ -16,7 +16,7 @@ func TestPrometheusRouter_PrometheusRouter(t *testing.T) {
 
 	componentDAO := mock.NewMockComponentDAO()
 	incidentDAO := mock.NewMockIncidentDAO()
-	componentService := component.NewService(componentDAO)
+	componentService := component.NewService(componentDAO, mock.NewComponentLogRepositoryMock())
 	incidentService := incident.NewService(incidentDAO, componentService)
 
 	Router(incidentService, componentService, router.Group("/v1"))

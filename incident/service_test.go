@@ -16,14 +16,14 @@ import (
 
 func TestNewIncidentService(t *testing.T) {
 	incidentDAO := mock.NewMockIncidentDAO()
-	componentService := component.NewService(mock.NewMockComponentDAO())
+	componentService := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
 	s := incident.NewService(incidentDAO, componentService)
 	assert.Implements(t, (*incident.Service)(nil), s)
 }
 func TestIncidentService_ListIncidents(t *testing.T) {
 	s := incident.NewService(
 		mock.NewMockIncidentDAO(),
-		component.NewService(mock.NewMockComponentDAO()),
+		component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock()),
 	)
 
 	params := models.ListIncidentQueryParameters{
@@ -94,7 +94,7 @@ func TestIncidentService_ListIncidents(t *testing.T) {
 func TestIncidentService_CreateIncident(t *testing.T) {
 	s := incident.NewService(
 		mock.NewMockIncidentDAO(),
-		component.NewService(mock.NewMockComponentDAO()),
+		component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock()),
 	)
 
 	i := models.Incident{
@@ -139,7 +139,7 @@ func TestIncidentService_CreateIncident(t *testing.T) {
 func TestIncidentService_FindIncidents(t *testing.T) {
 	s := incident.NewService(
 		mock.NewMockIncidentDAO(),
-		component.NewService(mock.NewMockComponentDAO()),
+		component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock()),
 	)
 
 	i, err := s.FindIncidents(map[string]interface{}{"component_ref": mock.ZeroTimeHex})
@@ -160,7 +160,7 @@ func TestIncidentService_FindIncidents(t *testing.T) {
 func TestIncidentService_ValidateMonth(t *testing.T) {
 	s := incident.NewService(
 		mock.NewMockIncidentDAO(),
-		component.NewService(mock.NewMockComponentDAO()),
+		component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock()),
 	)
 
 	start := time.Time{}

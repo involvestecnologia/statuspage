@@ -7,26 +7,32 @@ import (
 
 type componentService struct {
 	repo Repository
+	log  Log
 }
 
 //NewService creates implementation of the Service interface
-func NewService(r Repository) Service {
-	return &componentService{repo: r}
+func NewService(r Repository, l Log) Service {
+	return &componentService{repo: r, log: l}
 }
 
 func (s *componentService) CreateComponent(component models.Component) (string, error) {
+	s.log.Info(component, "Attempting to create a new component")
 	if valid, err := s.isValidComponent(component); !valid {
+		s.log.Error(component, "Component creation failed, it seems this component is not valid")
 		return component.Ref, err
 	}
 
 	if inUse, err := s.isComponentNameInUse(component); inUse {
+		s.log.Error(component, "Component creation failed, it seems this component name already exists")
 		return component.Ref, err
 	}
 
 	if inUse, err := s.isComponentRefInUse(component); inUse {
+		s.log.Error(component, "Component creation failed, it seems this component reference already exists")
 		return component.Ref, err
 	}
 
+	s.log.Info(component, "Validations passed! creating new component")
 	return s.repo.Insert(component)
 }
 

@@ -23,8 +23,8 @@ const (
 var router = gin.Default()
 
 func init() {
-	componentService := component.NewService(mock.NewMockComponentDAO())
-	componentFailureService := component.NewService(mock.NewMockFailureComponentDAO())
+	componentService := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	componentFailureService := component.NewService(mock.NewMockFailureComponentDAO(), mock.NewComponentLogRepositoryMock())
 	component.Router(componentService, router.Group(routerGroupName))
 	component.Router(componentFailureService, router.Group(failureRouterGroupName))
 }

@@ -17,3 +17,9 @@ type ComponentRefs struct {
 type ComponentLabels struct {
 	Labels []string `json:"labels,omitempty" binding:"required"`
 }
+
+type ComponentLog struct {
+	ComponentName string
+	Address       string
+	LogMessage    string
+}

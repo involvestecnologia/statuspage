@@ -36,3 +36,10 @@ type Service interface {
 	ListAllLabels() (models.ComponentLabels, error)
 	ListComponentsWithLabels(labels models.ComponentLabels) ([]models.Component, error)
 }
+
+//Log describes how loggers implementation will behave
+type Log interface {
+	Error(ojb models.Component, logMessage string)
+	Info(obj models.Component, logMessage string)
+	Warn(obj models.Component, logMessage string)
+}

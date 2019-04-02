@@ -22,7 +22,7 @@ const routerGroupName = "/test"
 const failureRouterGroupName = "/failure"
 
 var router = gin.Default()
-var componentService = component.NewService(mock.NewMockComponentDAO())
+var componentService = component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
 
 func init() {
 	incidentService := incident.NewService(mock.NewMockIncidentDAO(), componentService)
