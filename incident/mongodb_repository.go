@@ -77,6 +77,6 @@ func (r *mongoRepository) List(startDt time.Time, endDt time.Time, unresolved bo
 
 func mongoFailure(e *error) {
 	if r := recover(); r != nil {
-		*e = &errors.ErrMongoFailuere{Message: errors.ErrMongoFailuereMessage}
+		*e = &errors.ErrMongoFailure{Message: errors.ErrMongoFailureMessage}
 	}
 }

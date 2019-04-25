@@ -3,6 +3,7 @@ package component_test
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -47,8 +48,7 @@ func TestController_Create(t *testing.T) {
 
 	assert.Equal(t, http.StatusCreated, resp.Code)
 
-	var data string
-	err := json.Unmarshal([]byte(resp.Body.String()), &data)
+	data, err := ioutil.ReadAll(resp.Body)
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 

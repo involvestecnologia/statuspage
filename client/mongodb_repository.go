@@ -69,6 +69,6 @@ func (r *mongoRepository) List() (clients []models.Client, err error) {
 
 func mongoFailure(e *error) {
 	if r := recover(); r != nil {
-		*e = &errors.ErrMongoFailuere{Message: errors.ErrMongoFailuereMessage}
+		*e = &errors.ErrMongoFailure{Message: errors.ErrMongoFailureMessage}
 	}
 }

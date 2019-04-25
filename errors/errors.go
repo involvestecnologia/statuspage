@@ -37,8 +37,8 @@ const (
 	//ErrInvalidIncidentJSONDateMessage is the invalid occourence_date value or format default message
 	ErrInvalidIncidentJSONDateMessage = "Field occurrence_date not found"
 
-	//ErrMongoFailuereMessage is the mongo panic failure default message
-	ErrMongoFailuereMessage = "Failed to perform operation on MongoDB"
+	//ErrMongoFailureMessage is the mongo panic failure default message
+	ErrMongoFailureMessage = "Failed to perform operation on MongoDB"
 
 	//ErrIncidentStatusIgnoredMessage is the ignored Incident creation default message
 	ErrIncidentStatusIgnoredMessage = "Status didn't close last incident or escaled it's status"
@@ -104,8 +104,8 @@ type ErrInvalidIncidentJSONDate struct {
 	Message string
 }
 
-//ErrMongoFailuere is a error type throwed when a panic occoured when connecting to MongoDB
-type ErrMongoFailuere struct {
+//ErrMongoFailure is a error type throwed when a panic occoured when connecting to MongoDB
+type ErrMongoFailure struct {
 	Message string
 }
 
@@ -150,7 +150,7 @@ func (e *ErrTriggerUnavailable) Error() string {
 func (e *ErrInvalidIncidentJSONDate) Error() string {
 	return e.Message
 }
-func (e *ErrMongoFailuere) Error() string {
+func (e *ErrMongoFailure) Error() string {
 	return e.Message
 }
 

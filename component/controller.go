@@ -40,7 +40,7 @@ func (ctrl *Controller) Create(c *gin.Context) {
 			return
 		}
 	}
-	c.JSON(http.StatusCreated, ref)
+	c.String(http.StatusCreated, ref)
 }
 
 //Update it's the handler function for Component update endpoints
