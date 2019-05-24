@@ -9,7 +9,6 @@ This is a generic Status Page. It's sole purpose it's to display the latest inci
  - Prometheus incoming webhook
  - Categorize components with labels
  - [WIP] Incoming/Outgoing Webhooks
- - [WIP] Logs
 
 ### Docs:
  The API documentation is available in [StatusPage API Reference](https://involvestecnologia.github.io/statuspage-api-reference) <sub><sup>[[view-source-code](https://github.com/involvestecnologia/statuspage-api-reference)]</sup></sub>
