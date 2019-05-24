@@ -1,25 +1,26 @@
 package mock
 
 import (
-	"github.com/involvestecnologia/statuspage/component"
+	"github.com/involvestecnologia/statuspage/logs"
 	"github.com/involvestecnologia/statuspage/models"
 )
 
 type componentLogRepositoryMock struct {
 }
 
-func NewComponentLogRepositoryMock() component.Log {
+//NewComponentLogRepositoryMock creates a new mock for the log repository
+func NewComponentLogRepositoryMock() logs.Log {
 	return &componentLogRepositoryMock{}
 }
 
-func (mock *componentLogRepositoryMock) Info(obj models.Component, logMessage string) {
+func (mock *componentLogRepositoryMock) Info(obj models.LogFields, logMessage string) {
 	return
 }
 
-func (mock *componentLogRepositoryMock) Error(obj models.Component, logMessage string) {
+func (mock *componentLogRepositoryMock) Error(obj models.LogFields, logMessage string) {
 	return
 }
 
-func (mock *componentLogRepositoryMock) Warn(obj models.Component, logMessage string) {
+func (mock *componentLogRepositoryMock) Warn(obj models.LogFields, logMessage string) {
 	return
 }
