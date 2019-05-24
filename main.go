@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var log = logrus.New()
+var (
+	log        = logrus.New()
+	listenPort = "8080"
+)
 
 func main() {
 
@@ -22,12 +26,15 @@ func main() {
 
 	mgouri, exist := os.LookupEnv("MONGO_URI")
 	if !exist {
-		log.Panic("MongoDB URI not informed")
+		log.Error("MongoDB URI not informed")
 	}
 
+	if port, exist := os.LookupEnv("LISTEN_PORT"); exist {
+		listenPort = port
+	}
 	env, exist := os.LookupEnv("ENV_MODE")
 	if !exist {
-		log.Panic("MongoDB URI not informed")
+		log.Error("Env mode not informed")
 	}
 	if env == "production" {
 		log.SetFormatter(&logrus.JSONFormatter{})
@@ -58,5 +65,6 @@ func main() {
 	client.Router(clientService, v1)
 	prometheus.Router(incidentService, componentService, v1)
 
-	router.Run(":8080")
+	fmt.Printf("Listening on 0.0.0.0:%s\n", listenPort)
+	router.Run(":" + listenPort)
 }
