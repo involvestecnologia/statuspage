@@ -30,3 +30,8 @@ func (l *logRepository) Warn(args models.LogFields, logMessage string) {
 func (l *logRepository) Error(args models.LogFields, logMessage string) {
 	l.logger.WithFields(logrus.Fields(args)).Error(logMessage)
 }
+
+//Debug logs something to stdout as Error
+func (l *logRepository) Debug(args models.LogFields, logMessage string) {
+	l.logger.WithFields(logrus.Fields(args)).Debug(logMessage)
+}

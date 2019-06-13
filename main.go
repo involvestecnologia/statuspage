@@ -18,6 +18,7 @@ import (
 var (
 	log        = logrus.New()
 	listenPort = "8080"
+	envMode = "development"
 )
 
 func main() {
@@ -32,11 +33,12 @@ func main() {
 	if port, exist := os.LookupEnv("LISTEN_PORT"); exist {
 		listenPort = port
 	}
-	env, exist := os.LookupEnv("ENV_MODE")
-	if !exist {
-		log.Error("Env mode not informed")
+
+	if env, exist := os.LookupEnv("ENV_MODE"); exist {
+		envMode = env
 	}
-	if env == "production" {
+
+	if envMode == "production" {
 		log.SetFormatter(&logrus.JSONFormatter{})
 		log.SetLevel(logrus.ErrorLevel)
 	}

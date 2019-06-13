@@ -7,4 +7,5 @@ type Log interface {
 	Error(args models.LogFields, logMessage string)
 	Info(args models.LogFields, logMessage string)
 	Warn(args models.LogFields, logMessage string)
+	Debug(args models.LogFields, logMessage string)
 }

@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"log"
 	"github.com/involvestecnologia/statuspage/logs"
 	"github.com/involvestecnologia/statuspage/models"
 )
@@ -14,13 +15,17 @@ func NewComponentLogRepositoryMock() logs.Log {
 }
 
 func (mock *componentLogRepositoryMock) Info(obj models.LogFields, logMessage string) {
-	return
+	log.Printf("[INFO] %v+", obj)
 }
 
 func (mock *componentLogRepositoryMock) Error(obj models.LogFields, logMessage string) {
-	return
+	log.Printf("[ERROR] %v+", obj)
 }
 
 func (mock *componentLogRepositoryMock) Warn(obj models.LogFields, logMessage string) {
-	return
+	log.Printf("[WARN] %v+", obj)
+}
+
+func (mock *componentLogRepositoryMock) Debug(obj models.LogFields, logMessage string) {
+	log.Printf("[DEBUG] %v+", obj)
 }
