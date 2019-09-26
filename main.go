@@ -18,7 +18,7 @@ import (
 var (
 	log        = logrus.New()
 	listenPort = "8080"
-	envMode = "development"
+	envMode    = "development"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 
 	mgouri, exist := os.LookupEnv("MONGO_URI")
 	if !exist {
-		log.Error("MongoDB URI not informed")
+		panic("MongoDB URI not informed")
 	}
 
 	if port, exist := os.LookupEnv("LISTEN_PORT"); exist {
