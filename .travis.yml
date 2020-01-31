@@ -6,8 +6,10 @@ env:
 before_install:
   - go get github.com/mattn/goveralls
   - go get github.com/axw/gocov/gocov
+  - go get github.com/securego/gosec/cmd/gosec
 services:
   - mongodb
 script:
+  - gosec ./...
   - go test -v  ./... -covermode=count -coverprofile=coverage.out
   - goveralls -coverprofile=coverage.out -service travis-ci -repotoken $COVERALLS_TOKEN

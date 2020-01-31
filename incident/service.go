@@ -57,8 +57,8 @@ func (s *incidentService) CreateIncidents(incident models.Incident) error {
 		for _, inc := range unresolvedIncidents {
 			inc.Resolved = true
 			inc.Duration = time.Since(lastIncident.Date)
-			s.UpdateIncident(inc)
-			s.repo.Insert(incident)
+			s.UpdateIncident(inc)   // #nosec
+			s.repo.Insert(incident) // #nosec
 		}
 		return err
 	}
@@ -68,7 +68,7 @@ func (s *incidentService) CreateIncidents(incident models.Incident) error {
 		//Update resolved and duration from last, then create new incident
 		lastIncident.Resolved = true
 		lastIncident.Duration = time.Since(lastIncident.Date)
-		s.UpdateIncident(lastIncident)
+		s.UpdateIncident(lastIncident) // #nosec
 		return s.repo.Insert(incident)
 	}
 
