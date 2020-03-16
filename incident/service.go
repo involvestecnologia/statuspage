@@ -22,65 +22,33 @@ func NewService(r Repository, component component.Service) Service {
 }
 
 func (s *incidentService) CreateIncidents(incident models.Incident) error {
-	_, err := s.component.FindComponent(map[string]interface{}{"ref": incident.ComponentRef})
-	if err != nil {
+	if _, err := s.component.FindComponent(map[string]interface{}{"ref": incident.ComponentRef}); err != nil {
 		return err
 	}
 
-	if incident.Status == models.IncidentStatusOK {
-		// Certify that OK status are already resolved
+	// Look for unresolved related incidents
+	openIncidents, err := s.GetUnresolvedIncidents(incident.ComponentRef)
+	if err != nil {
+		return err
+	}
+	hasOpenIncidents := len(openIncidents) > 0
+
+	switch incident.Status {
+	case models.IncidentStatusOK:
 		incident.Resolved = true
-	}
-
-	lastIncident, err := s.GetLastIncident(incident.ComponentRef)
-	if err != nil {
-		switch err.(type) {
-		case *errors.ErrNotFound:
-			//No previous incidents found, just create the new incident
-			return s.repo.Insert(incident)
-		default:
-			return err
+		if hasOpenIncidents {
+			s.closeIncidents(openIncidents...)
 		}
-	}
-
-	if lastIncident.Status == models.IncidentStatusOK {
-		unresolvedIncidents, err := s.GetUnresolvedIncidents(incident.ComponentRef, incident.Description)
-		if err != nil {
-			switch err.(type) {
-			case *errors.ErrNotFound:
-				//No unresolved incidents found, just create the new incident
-				return s.repo.Insert(incident)
-			default:
-				return err
-			}
+		return s.repo.Insert(incident)
+	case models.IncidentStatusUnstable, models.IncidentStatusOutage:
+		if hasOpenIncidents && openIncidents[0].Status == models.IncidentStatusOutage {
+			return &errors.ErrIncidentStatusIgnored{Message: errors.ErrIncidentStatusIgnoredMessage}
 		}
-		for _, inc := range unresolvedIncidents {
-			inc.Resolved = true
-			inc.Duration = time.Since(lastIncident.Date)
-			s.UpdateIncident(inc)
-			s.repo.Insert(incident)
-		}
-		return err
-	}
 
-	if incident.Status == models.IncidentStatusOK {
-		//Last status was NOT OK and new status is OK.
-		//Update resolved and duration from last, then create new incident
-		lastIncident.Resolved = true
-		lastIncident.Duration = time.Since(lastIncident.Date)
-		s.UpdateIncident(lastIncident)
 		return s.repo.Insert(incident)
 	}
 
-	if incident.Status > lastIncident.Status {
-		//Last status was NOT OK and new status is more critical.
-		//Update last incident status.
-		lastIncident.Status = incident.Status
-		lastIncident.Description = incident.Description
-		return s.UpdateIncident(lastIncident)
-	}
-
-	return &errors.ErrIncidentStatusIgnored{Message: errors.ErrIncidentStatusIgnoredMessage}
+	return &errors.ErrUnkownIncidentStatus{Message: errors.ErrUnkownIncidentStatusMessage}
 }
 
 func (s *incidentService) UpdateIncident(incident models.Incident) error {
@@ -95,8 +63,8 @@ func (s *incidentService) GetLastIncident(componentRef string) (models.Incident,
 	return s.repo.FindOne(map[string]interface{}{"component_ref": componentRef})
 }
 
-func (s *incidentService) GetUnresolvedIncidents(componentRef, description string) ([]models.Incident, error) {
-	return s.repo.Find(map[string]interface{}{"component_ref": componentRef, "description": description, "resolved": false})
+func (s *incidentService) GetUnresolvedIncidents(componentRef string) ([]models.Incident, error) {
+	return s.repo.Find(map[string]interface{}{"component_ref": componentRef, "resolved": false})
 }
 
 func (s *incidentService) ListIncidents(queryParameters models.ListIncidentQueryParameters) ([]models.Incident, error) {
@@ -135,4 +103,15 @@ func (s *incidentService) ValidateDate(startDate, endDate time.Time) error {
 	}
 
 	return nil
+}
+
+func (s *incidentService) closeIncidents(incidents ...models.Incident) {
+	for _, openIncident := range incidents {
+		openIncident.Resolved = true
+		openIncident.Duration = time.Since(openIncident.Date)
+		if err := s.UpdateIncident(openIncident); err != nil {
+
+		}
+
+	}
 }

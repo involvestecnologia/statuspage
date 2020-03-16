@@ -42,6 +42,9 @@ const (
 
 	//ErrIncidentStatusIgnoredMessage is the ignored Incident creation default message
 	ErrIncidentStatusIgnoredMessage = "Status didn't close last incident or escaled it's status"
+
+	//ErrUnkownIncidentStatusMessage is the incident with unkown status default message
+	ErrUnkownIncidentStatusMessage = "Incident status unkown"
 )
 
 //ErrAlreadyExists is a error type throwed when the resource already exists
@@ -114,6 +117,11 @@ type ErrIncidentStatusIgnored struct {
 	Message string
 }
 
+//ErrUnkownIncidentStatus is a error type throwed when a Incident status is not a known status
+type ErrUnkownIncidentStatus struct {
+	Message string
+}
+
 func (e *ErrAlreadyExists) Error() string {
 	return e.Message
 }
@@ -155,5 +163,9 @@ func (e *ErrMongoFailure) Error() string {
 }
 
 func (e *ErrIncidentStatusIgnored) Error() string {
+	return e.Message
+}
+
+func (e *ErrUnkownIncidentStatus) Error() string {
 	return e.Message
 }
