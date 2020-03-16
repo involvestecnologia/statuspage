@@ -54,11 +54,11 @@ func main() {
 	componentRepository := component.NewMongoRepository(session)
 	incidentRepository := incident.NewMongoRepository(session)
 	clientRepository := client.NewMongoRepository(session)
-	componentLogRepository := logs.NewLogRepository(log)
+	LogRepository := logs.NewLogRepository(log)
 
 	// Initialize services
-	componentService := component.NewService(componentRepository, componentLogRepository)
-	incidentService := incident.NewService(incidentRepository, componentService)
+	componentService := component.NewService(componentRepository, LogRepository)
+	incidentService := incident.NewService(incidentRepository, componentService, LogRepository)
 	clientService := client.NewService(clientRepository, componentService)
 
 	// Initialize routers

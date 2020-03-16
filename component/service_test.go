@@ -15,13 +15,13 @@ import (
 
 func TestNewComponentService(t *testing.T) {
 	dao := mock.NewMockComponentDAO()
-	s := component.NewService(dao, mock.NewComponentLogRepositoryMock())
+	s := component.NewService(dao, mock.NewLogRepositoryMock())
 	assert.Implements(t, (*component.Service)(nil), s)
 
 }
 
 func TestComponentService_ListComponents(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	refs := make([]string, 0)
 	c, err := s.ListComponents(refs)
@@ -33,7 +33,7 @@ func TestComponentService_ListComponents(t *testing.T) {
 	}
 }
 func TestComponentService_FindComponent(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	c, err := s.FindComponent(map[string]interface{}{"ref": mock.ZeroTimeHex})
 	if assert.Nil(t, err) && assert.NotNil(t, c) {
@@ -69,7 +69,7 @@ func TestComponentService_FindComponent(t *testing.T) {
 
 }
 func TestComponentService_CreateComponent(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	c := models.Component{
 		Ref:     bson.NewObjectIdWithTime(bson.Now().Add(5 * time.Second)).Hex(),
@@ -100,7 +100,7 @@ func TestComponentService_CreateComponent(t *testing.T) {
 
 }
 func TestComponentService_UpdateComponent(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	currTime := bson.Now().String()
 	c, err := s.FindComponent(map[string]interface{}{"ref": mock.ZeroTimeHex})
@@ -124,7 +124,7 @@ func TestComponentService_UpdateComponent(t *testing.T) {
 
 }
 func TestComponentService_RemoveComponent(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	err := s.RemoveComponent(mock.ZeroTimeHex)
 	assert.Nil(t, err)
@@ -133,7 +133,7 @@ func TestComponentService_RemoveComponent(t *testing.T) {
 	assert.NotNil(t, err)
 }
 func TestComponentService_componentExists(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	c, err := s.FindComponent(map[string]interface{}{"ref": mock.ZeroTimeHex})
 	if assert.Nil(t, err) && assert.NotNil(t, c) {
@@ -149,7 +149,7 @@ func TestComponentService_componentExists(t *testing.T) {
 }
 
 func TestComponentService_ListAllLabels(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	c := models.Component{
 		Ref:     bson.NewObjectIdWithTime(bson.Now().Add(5 * time.Second)).Hex(),
@@ -168,7 +168,7 @@ func TestComponentService_ListAllLabels(t *testing.T) {
 
 }
 func TestComponentService_ListComponentsWithLabels(t *testing.T) {
-	s := component.NewService(mock.NewMockComponentDAO(), mock.NewComponentLogRepositoryMock())
+	s := component.NewService(mock.NewMockComponentDAO(), mock.NewLogRepositoryMock())
 
 	c := models.Component{
 		Name:    "New Component",

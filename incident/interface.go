@@ -29,7 +29,6 @@ type Repository interface {
 type Service interface {
 	CreateIncidents(incident models.Incident) error
 	UpdateIncident(incident models.Incident) error
-	GetLastIncident(componentRef string) (models.Incident, error)
 	FindIncidents(query map[string]interface{}) ([]models.Incident, error)
 	ListIncidents(queryParameters models.ListIncidentQueryParameters) ([]models.Incident, error)
 	ValidateDate(startDate time.Time, endDate time.Time) error

@@ -14,17 +14,17 @@ func NewServicesMock(failure bool, m string) Service {
 	componentFailureDAO := mock.NewMockFailureComponentDAO()
 	incidentDAO := mock.NewMockIncidentDAO()
 	incidentFailureDAO := mock.NewMockFailureIncidentDAO()
-	componentService := component.NewService(componentDAO, mock.NewComponentLogRepositoryMock())
-	incidentService := incident.NewService(incidentDAO, componentService)
+	componentService := component.NewService(componentDAO, mock.NewLogRepositoryMock())
+	incidentService := incident.NewService(incidentDAO, componentService, mock.NewLogRepositoryMock())
 
 	if failure {
 		if m == "incident" {
-			componentService = component.NewService(componentDAO, mock.NewComponentLogRepositoryMock())
-			incidentService = incident.NewService(incidentFailureDAO, componentService)
+			componentService = component.NewService(componentDAO, mock.NewLogRepositoryMock())
+			incidentService = incident.NewService(incidentFailureDAO, componentService, mock.NewLogRepositoryMock())
 		}
 		if m == "component" {
-			componentService = component.NewService(componentFailureDAO, mock.NewComponentLogRepositoryMock())
-			incidentService = incident.NewService(incidentDAO, componentService)
+			componentService = component.NewService(componentFailureDAO, mock.NewLogRepositoryMock())
+			incidentService = incident.NewService(incidentDAO, componentService, mock.NewLogRepositoryMock())
 		}
 	}
 

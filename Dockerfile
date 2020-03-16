@@ -20,6 +20,4 @@ USER statuspage
 
 COPY --from=builder /go/src/github.com/involvestecnologia/statuspage/statuspage /usr/bin/statuspage
 
-EXPOSE 8080
-
 CMD ["statuspage"]

@@ -1,6 +1,6 @@
 language: go
 go:
-  - 1.11.x
+  - 1.13.x
 env:
   - GO111MODULE=on
 before_install:
@@ -9,5 +9,5 @@ before_install:
 services:
   - mongodb
 script:
-  - go test -v  ./... -covermode=count -coverprofile=coverage.out
+  - go test -v  ./... -covermode=count -coverprofile=coverage.out -parallel 1
   - goveralls -coverprofile=coverage.out -service travis-ci -repotoken $COVERALLS_TOKEN
