@@ -89,7 +89,7 @@ func (ctrl *Controller) Find(c *gin.Context) {
 //List it's the handler function for Component listing endpoints
 func (ctrl *Controller) List(c *gin.Context) {
 	var comps models.ComponentRefs
-	c.ShouldBindJSON(&comps)
+	c.ShouldBindJSON(&comps) // #nosec
 	components, err := ctrl.service.ListComponents(comps.Refs)
 	if err != nil {
 		switch err.(type) {
